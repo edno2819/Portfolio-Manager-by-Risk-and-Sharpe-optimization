@@ -1,6 +1,7 @@
 from itertools import combinations
-import yfinance as yf
 import numpy as np 
+import yfinance as yf
+
 
 
 def covariancia(closes_1, closes_2):
@@ -47,7 +48,7 @@ def covariancia(closes_1, closes_2):
 
 def variancia_porcent(closes):
     v = 0
-    mean = media_retorno_porcent(closes)
+    mean = media_retorno(closes)
     for c in range(1, len(closes)):
         close = closes[c]
         close_before = closes[c-1]
@@ -105,6 +106,22 @@ class portifolio:
 
         return sum(risk)**(0.5)
 
+    def risk_portfolio_equal(self):
+        risk = []
+        simboly = ['x', 'y', 'z', 'p', 'q', 'g', 'm', 'l']
+        sym = {list(self.assets_var.keys())[c]:simboly[c] for c in range(len(self.assets_var.keys()))}
+
+        for asset in self.assets_var.keys(): 
+            risk.append(f'(({sym[asset]}**2) * {self.assets_var[asset]})')
+
+        #combinação simples entre os assets
+        for asset1, asset2 in self.comb:
+            risk.append( f"(2 * {sym[asset1]} * {sym[asset2]} * {self.assets_cov[asset1+'/'+asset2]})")
+
+        equal = '(' + ' + '.join(risk) +')**0.5'
+
+        return equal#eval(equal)
+
     def return_portfolio(self, porcent:dict):
         retu = 0
         for asset in porcent.keys(): 
@@ -117,36 +134,37 @@ class portifolio:
         self.calculate_cov()
 
 
-assets = "SPY AAPL TSLA FB"
-start = "2017-01-01"
-end = "2021-04-30"
-interval="1wk"
+# assets = "SPY AAPL TSLA FB"
+# start = "2017-01-01"
+# end = "2021-04-30"
+# interval="1wk"
 
-data = yf.download(assets, start=start, end=end, interval=interval)
-CLOSES = data['Adj Close']
-assets_name = list(CLOSES.columns)
+# data = yf.download(assets, start=start, end=end, interval=interval)
+# CLOSES = data['Adj Close']
+# assets_name = list(CLOSES.columns)
 
-a = portifolio()
+# a = portifolio()
 
-for asset in assets_name:
-    data =  np.array(list(CLOSES[asset].array))
-    data = data[np.logical_not(np.isnan(data))]
-    a.add_asset(asset, data)
+# for asset in assets_name:
+#     data =  np.array(list(CLOSES[asset].array))
+#     data = data[np.logical_not(np.isnan(data))]
+#     a.add_asset(asset, data)
 
-a.set_to_calculate_risk()
-a.calculate_return()
+# a.set_to_calculate_risk()
+# a.calculate_return()
 
+# equal = a.risk_portfolio_equal()
 
-def equal_minimun(propor:list):
-    taxas = {assets_name[asset]:propor[asset] for asset in range(len(assets_name))}
+# def equal_minimun(propor:list):
+#     taxas = {assets_name[asset]:propor[asset] for asset in range(len(assets_name))}
 
-    print(f'\n\nPORPORÇÕES DE ATIVOS: {taxas}')
-    print(f'The Portfolio Risk: {round(a.risk_portfolio(taxas),4)}%')
-    print(f'Expected Portfolio Return: {round(a.return_portfolio(taxas),4)}%\n')
+#     print(f'\n\nPORPORÇÕES DE ATIVOS: {taxas}')
+#     print(f'The Portfolio Risk: {round(a.risk_portfolio_equal(taxas),4)}%')
+#     print(f'Expected Portfolio Return: {round(a.return_portfolio(taxas),4)}%\n')
 
-equal_minimun([.25, .25, .25, .25])
-equal_minimun([.45, .30, .5, .2])
-equal_minimun([.45, .05, .0, .5])
-equal_minimun([.0, .0, .0, 1])
+# equal_minimun([.25, .25, .25, .25])
+# equal_minimun([.45, .30, .5, .2])
+# equal_minimun([.45, .05, .0, .5])
+# equal_minimun([.0, .0, .0, 1])
 
 
