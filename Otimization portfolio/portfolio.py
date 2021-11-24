@@ -1,6 +1,4 @@
 from itertools import combinations
-import numpy as np 
-import yfinance as yf
 
 
 
@@ -75,10 +73,12 @@ class portifolio:
         self.assets_cov = {}
         self.assets_return = {}
 
+
     def add_asset(self, name:str, serie_temporal_close:list):
         self.port[name] = serie_temporal_close
         self.port_porcent[name] = datas_to_porcent(serie_temporal_close)
     
+
     def calculate_return(self):
         for asset in self.port.keys():
             self.assets_return[asset] = media_retorno(self.port[asset])
@@ -88,6 +88,7 @@ class portifolio:
         for asset in self.port.keys():
             self.assets_var[asset] = variancia(self.port_porcent[asset])
 
+
     def calculate_cov(self):
         self.comb = list(combinations(self.port.keys(), 2))
 
@@ -95,7 +96,8 @@ class portifolio:
             self.assets_cov[asset1+'/'+asset2] = covariancia(self.port_porcent[asset1], self.port_porcent[asset2])
 
     
-    def risk_portfolio(self, porcent:dict):
+    def risk_portfolio(self, porcent:list):
+        porcent = self.taxas_to_dict(porcent)
         risk = []
         for asset in porcent.keys(): 
             risk.append((porcent[asset]**2) * self.assets_var[asset])
@@ -105,6 +107,7 @@ class portifolio:
             risk.append( 2 * porcent[asset1] * porcent[asset2] * self.assets_cov[asset1+'/'+asset2])
 
         return sum(risk)**(0.5)
+
 
     def risk_portfolio_equal(self):
         risk = []
@@ -122,16 +125,42 @@ class portifolio:
 
         return equal#eval(equal)
 
-    def return_portfolio(self, porcent:dict):
+
+    def return_portfolio(self, porcent:list, tipo=False):
+        porcent = self.taxas_to_dict(porcent)
         retu = 0
         for asset in porcent.keys(): 
             retu += porcent[asset] * self.assets_return[asset]
 
-        return retu
+        return retu if tipo else 1 - retu
     
+
     def set_to_calculate_risk(self):
         self.calculate_var()
         self.calculate_cov()
+
+
+    def taxas_to_dict(self, propor:list):
+        assets_name = list(self.port.keys())
+        taxas = {assets_name[asset]:propor[asset] for asset in range(len(assets_name))}
+        return taxas
+
+
+    def sharpe_ratio(self, porcent, risk_free_rate=0.04, tipo=False):
+        standart_deviation = self.risk_portfolio(porcent)
+        return_portfolio = self.return_portfolio(porcent, True)
+        result = (return_portfolio - risk_free_rate) / standart_deviation
+        return result if tipo else 1 - result
+
+    def calculate_por_period(self, porcent, period_size:int):
+        result = 0
+        for c in range(period_size,len(list(porcent.keys()))-1):
+            #lisa[c-period_size:period_size]
+            self.set_to_calculate_risk()
+            self.calculate_return()
+            result += self.sharpe_ratio(porcent)
+        return result
+
 
 
 # assets = "SPY AAPL TSLA FB"
