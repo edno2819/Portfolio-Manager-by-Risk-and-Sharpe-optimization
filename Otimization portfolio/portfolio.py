@@ -1,4 +1,6 @@
 from itertools import combinations
+import matplotlib.pyplot as plt
+
 
 
 
@@ -33,17 +35,6 @@ def retorno(close_now:float, close_before:float):
 
 
 
-def covariancia(closes_1, closes_2):
-    c = 0
-    n = len(closes_1)
-    mean_1 = sum(closes_1)/len(closes_1)
-    mean_2 = sum(closes_2)/len(closes_2)
-
-    for close_1, close_2 in zip(closes_1, closes_2):
-        c += (close_1 - mean_1)*(close_2 - mean_2)
-    c /= n - 1
-    return c
-
 def variancia_porcent(closes):
     v = 0
     mean = media_retorno(closes)
@@ -64,14 +55,22 @@ def datas_to_porcent(closes:list):
         new_list.append(porcent_dif(closes[n-1], closes[n]))
     return new_list
 
+def datas_to_porcent_init(closes:list):
+    new_list = []
+    for n in range(1, len(closes)):
+        new_list.append(porcent_dif(closes[0], closes[n]))
+    return new_list
 
-class portifolio:
+
+class Portifolio:
     def __init__(self) -> None:
         self.port = {}
         self.port_porcent = {}
         self.assets_var = {}
         self.assets_cov = {}
         self.assets_return = {}
+        self.assets_dates = {}
+        self.dates = []
 
 
     def add_asset(self, name:str, serie_temporal_close:list):
@@ -160,40 +159,73 @@ class portifolio:
             self.calculate_return()
             result += self.sharpe_ratio(porcent)
         return result
+    
+    def calculate_return_portfolio(self, porcent):
+        porcent = self.taxas_to_dict(porcent)
+        result = []
+        for c in range(len(self.dates)):
+            sum = 0
+            for asset in porcent.keys(): 
+                sum += porcent[asset] * self.port[asset][c]
+            result.append(sum)
+        return [x+1 for x in datas_to_porcent_init(result)] 
+
+    def chart_to_portfolio_return_porcent(self, taxas):
+        with plt.style.context('Solarize_Light2'):
+            values = [1]
+            values += self.calculate_return_portfolio(taxas)  
+            for c in range(len(self.port.keys())): 
+                asset = list(self.port.keys())[c]
+                plt.plot(self.dates[0], [min(values)], label=f'{asset}:{round(taxas[c]*100,2)}%')
+
+            plt.plot(self.dates, values)
+            plt.title('Ações')
+            plt.legend(loc="upper left")
+            plt.xlabel('Periodo', fontsize=14)
+            plt.ylabel('Porcentagem', fontsize=14)
+            plt.show()
+
+    def chart_to_portfolio(self):
+        with plt.style.context('Solarize_Light2'):
+            for asset in self.port.keys():  
+                plt.plot(self.assets_dates[asset], self.port[asset], label=asset)
+
+            plt.title('Ações')
+            plt.legend(loc="upper left")
+            plt.xlabel('x label', fontsize=14)
+            plt.ylabel('y label', fontsize=14)
+            plt.show()
 
 
 
-# assets = "SPY AAPL TSLA FB"
-# start = "2017-01-01"
+
+# import matplotlib.pyplot as plt
+# import yfinance as yf
+# import numpy  as np
+
+# def set_assets_portfolio(port, assets, start, end, interval):
+#     data = yf.download(assets, start=start, end=end, interval=interval)
+#     CLOSES = data['Adj Close']
+#     port.dates =  list(CLOSES.dropna().index)
+#     assets_name = list(CLOSES.columns)
+    
+
+
+#     for asset in assets_name:
+#         data =  np.array(list(CLOSES[asset].array))
+#         data = data[np.logical_not(np.isnan(data))]
+#         if len(data)>0:
+#             port.add_asset(asset, data)
+#             port.assets_dates[asset] = list(CLOSES[asset].dropna().index)
+
+#     port.set_to_calculate_risk()
+#     port.calculate_return()
+
+# start = "2015-04-30"
 # end = "2021-04-30"
-# interval="1wk"
+# interval="3mo"
+# assets = "SPY AAPL FB VALE MSFT"
+# port_teste = portifolio()
 
-# data = yf.download(assets, start=start, end=end, interval=interval)
-# CLOSES = data['Adj Close']
-# assets_name = list(CLOSES.columns)
-
-# a = portifolio()
-
-# for asset in assets_name:
-#     data =  np.array(list(CLOSES[asset].array))
-#     data = data[np.logical_not(np.isnan(data))]
-#     a.add_asset(asset, data)
-
-# a.set_to_calculate_risk()
-# a.calculate_return()
-
-# equal = a.risk_portfolio_equal()
-
-# def equal_minimun(propor:list):
-#     taxas = {assets_name[asset]:propor[asset] for asset in range(len(assets_name))}
-
-#     print(f'\n\nPORPORÇÕES DE ATIVOS: {taxas}')
-#     print(f'The Portfolio Risk: {round(a.risk_portfolio_equal(taxas),4)}%')
-#     print(f'Expected Portfolio Return: {round(a.return_portfolio(taxas),4)}%\n')
-
-# equal_minimun([.25, .25, .25, .25])
-# equal_minimun([.45, .30, .5, .2])
-# equal_minimun([.45, .05, .0, .5])
-# equal_minimun([.0, .0, .0, 1])
-
-
+# assets_name = set_assets_portfolio(port_teste, assets, start, end, interval)
+# port_teste.chart_to_portfolio([.25,.25,.25,.25,.25])
