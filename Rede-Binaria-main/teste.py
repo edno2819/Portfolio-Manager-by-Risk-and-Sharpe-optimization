@@ -1,90 +1,150 @@
+import argparse
 
-import pandas as pd
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.callbacks import EarlyStopping
-from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from sklearn.model_selection import train_test_split
-from tensorflow.keras import regularizers
-from keras.layers import LSTM
-from tensorflow.keras.optimizers import SGD
-import keras
-from functions import *
+import pandas as pd
+import tensorflow as tf
 
-TICKS = 20
-N_INPUTS = 5
-COLUMN_NAME = 'Rate Close'
+from sklearn.preprocessing import MinMaxScaler
 
-def custom_loss_1(y_true, y_pred):
-    def check_dirc(y_t, y_p):
-        return True if y_t*y_p>0 else False
-    penal = 0.20
-    tensor = []
-    for y_t, y_p  in zip(y_true[0], y_pred[0]):
-        value = (y_t - y_p)
-        if check_dirc(y_t, y_p):
-            value += penal
-        tensor.append(value)
-    return tensor
+DEFAULT_STOCK_FILE = "data/data_stocks.csv"
+DEFAULT_BATCH_SIZE = 256
 
-dataset = pd.read_csv(r"history_datas\AAPL_1d.csv", sep='\t')
 
-dataset = creat_rate_close(dataset, 'Close', COLUMN_NAME)
+def load_stock_data():
+    data = pd.read_csv(DEFAULT_STOCK_FILE, sep=',')
 
-dataset.drop(columns=['Date'], inplace=True)
-dataset.drop(columns=['Close'], inplace=True)
+    # Drop date variable
+    data = data.drop(['DATE'], 1)
 
-X, Y = fit_dados(dataset, dataset[COLUMN_NAME].values, TICKS)
+    return np.array(data)
 
-sc = MinMaxScaler(feature_range = (0, 1))
 
-Y = sc.fit_transform(np.reshape(np.array(Y), (len(Y),1)))
+def build_mlp(n_stocks, n_target, input_data):
+    n_neurons_1 = 2048  # 1024
+    n_neurons_2 = 1024  # 512
+    n_neurons_3 = 512   # 256
+    n_neurons_4 = 256   # 128
+    n_neurons_5 = 128
 
-X_train, X_test, y_train, y_test = train_test_split(X, Y,  test_size=0.3, shuffle=False)
+    # Initializers
+    sigma = 1
+    weight_initializer = tf.variance_scaling_initializer(mode="fan_avg", distribution="uniform", scale=sigma)
+    bias_initializer = tf.zeros_initializer()
 
-def model_LSTM():
-  regressor = Sequential()
+    # Hidden layers
+    # Layer 1: Variables for hidden weights and biases
+    W_hidden_1 = tf.Variable(weight_initializer([n_stocks, n_neurons_1]))
+    bias_hidden_1 = tf.Variable(bias_initializer([n_neurons_1]))
+    hidden_1 = tf.nn.relu(tf.add(tf.matmul(input_data, W_hidden_1), bias_hidden_1))
 
-  regressor.add(LSTM(units = 33, activation='tanh',  return_sequences = True, input_shape = (TICKS, N_INPUTS)))
+    # Layer 2: Variables for hidden weights and biases
+    W_hidden_2 = tf.Variable(weight_initializer([n_neurons_1, n_neurons_2]))
+    bias_hidden_2 = tf.Variable(bias_initializer([n_neurons_2]))
+    hidden_2 = tf.nn.relu(tf.add(tf.matmul(hidden_1, W_hidden_2), bias_hidden_2))
 
-  
-  regressor.add(LSTM(units = 33,return_sequences = True, kernel_regularizer = regularizers.l2 (0.0001)))
- 
-  
-  regressor.add(LSTM(units = 33, return_sequences = True))
- 
+    # Layer 3: Variables for hidden weights and biases
+    W_hidden_3 = tf.Variable(weight_initializer([n_neurons_2, n_neurons_3]))
+    bias_hidden_3 = tf.Variable(bias_initializer([n_neurons_3]))
+    hidden_3 = tf.nn.relu(tf.add(tf.matmul(hidden_2, W_hidden_3), bias_hidden_3))
 
-  regressor.add(LSTM(units = 33))
- 
+    # Layer 4: Variables for hidden weights and biases
+    W_hidden_4 = tf.Variable(weight_initializer([n_neurons_3, n_neurons_4]))
+    bias_hidden_4 = tf.Variable(bias_initializer([n_neurons_4]))
+    hidden_4 = tf.nn.relu(tf.add(tf.matmul(hidden_3, W_hidden_4), bias_hidden_4))
 
-  regressor.add(Dense(1, activation='tanh'))
+    # Layer 5: Variables for hidden weights and biases
+    W_hidden_5 = tf.Variable(weight_initializer([n_neurons_4, n_neurons_5]))
+    bias_hidden_5 = tf.Variable(bias_initializer([n_neurons_5]))
+    hidden_5 = tf.nn.relu(tf.add(tf.matmul(hidden_4, W_hidden_5), bias_hidden_5))
 
-  opt = SGD(lr=0.01, momentum=0.9)
+    # Output layer (must be transposed)
+    W_out = tf.Variable(weight_initializer([n_neurons_5, n_target]))
+    bias_out = tf.Variable(bias_initializer([n_target]))
+    out = tf.transpose(tf.add(tf.matmul(hidden_5, W_out), bias_out))
 
-  regressor.compile(optimizer='rmsprop', loss=custom_loss_1)
-  
-  return regressor
+    return out
 
-def model_DMLP():
-  model = Sequential()
 
-  model.add(Dense(2, activation="tanh", input_shape=(TICKS, N_INPUTS)))
-  model.add(Dense(10))
-  model.add(Dense(10))
-  model.add(Dense(1, activation="tanh"))
+def train_mlp(epochs):
+    # Preparing training and testing data
+    data = load_stock_data()
+    n = data.shape[0]
+    p = data.shape[1]
 
-  model.compile(optimizer = "adam", loss='mean_absolute_error')
-  
-  return model
+    # split training and testing data
+    train_start = 0
+    train_end = int(np.floor(0.8 * n))
+    test_start = train_end + 1
+    test_end = n
 
-es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
+    data_train = data[np.arange(train_start, train_end), :]
+    data_test = data[np.arange(test_start, test_end), :]
 
-model = model_LSTM()
-print(model.summary())
+    # rescale
+    rescaler = MinMaxScaler()
+    rescaler.fit(data_train)
+    rescaler.transform(data_train)
+    rescaler.transform(data_test)
 
-history = model.fit(X_train, y_train, validation_data=(X_test, y_test),  batch_size=100, epochs=200, verbose=1, callbacks=[es])
+    X_train = data_train[:, 1:]
+    Y_train = data_train[:, 0]
+    X_test = data_test[:, 1:]
+    Y_test = data_test[:, 0]
 
-predicted_stock_price = model.predict(X_test) 
+    n_stocks = 500
+    n_target = 1
 
-predicted_stock_price
+    tf.reset_default_graph()
+
+    # Placeholder
+    X_input = tf.placeholder(dtype=tf.float32, shape=[None, n_stocks], name="X_input")
+    Y_input = tf.placeholder(dtype=tf.float32, shape=[None], name="Y_input")
+
+    mlp_out = build_mlp(n_stocks, n_target, X_input)
+
+    # Cost function
+    mse = tf.reduce_mean(tf.squared_difference(mlp_out, Y_input))
+
+    # Optimizer
+    opt = tf.train.AdamOptimizer().minimize(mse)
+
+    # Make Session
+    session = tf.Session()
+
+    # Run initializer
+    session.run(tf.global_variables_initializer())
+
+    # set batch size
+    batch_size = DEFAULT_BATCH_SIZE
+
+    for e in range(epochs):
+        # Shuffle training data
+        shuffle_indices = np.random.permutation(np.arange(len(Y_train)))
+        X_train = X_train[shuffle_indices]
+        Y_train = Y_train[shuffle_indices]
+
+        n_batch = int(len(Y_train) / batch_size)
+
+        # Minibatch training
+        for i in range(0, n_batch):
+            start = i * batch_size
+            batch_x = X_train[start:start + batch_size]
+            batch_y = Y_train[start:start + batch_size]
+
+            # Run optimizer with batch
+            session.run(opt, feed_dict={X_input: batch_x, Y_input: batch_y})
+
+        mse_val = session.run(mse, feed_dict={X_input: X_test, Y_input: Y_test})
+        print("At {}th epoch, mse for X_test/Y_test is {}".format(e, mse_val))
+
+
+parser = argparse.ArgumentParser(description="Training TensorFlow MLP to predict SP500 Index")
+parser.add_argument('-ep', type=int, default=10, help="Number of epochs")
+
+if __name__ == "__main__":
+    parsed_args = parser.parse_args()
+    epochs = parsed_args.ep
+
+    tf.logging.set_verbosity(tf.logging.INFO)
+    
+    train_mlp(epochs)
