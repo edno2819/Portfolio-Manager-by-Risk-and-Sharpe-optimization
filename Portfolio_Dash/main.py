@@ -32,27 +32,27 @@ dados_port = [
 child = dbc.Container(
     [
         dbc.Row([
+
             dbc.Col([
-            html.H5('Total Portfolio Value ($USD)', className='text-center'),
-            dcc.Graph(id='chrt-portfolio-main',
-                      figure=GrapPor_extra.chart_to_portfolio(),
-                      style={'height':550}),
-            ],
-                width={'size': 8, 'offset': 0, 'order': 1}),
+            html.H5('Comparativo do Retorno do Portifólio no Periodo Extrapolado(%)', className='text-center'),
+            dcc.Graph(id='chat_portfolio_return', style={'height':550}, figure=GrapPor_extra.returnPortfolio()) ],
+            width={'size': 8, 'offset': 0, 'order': 1}),
+
             dbc.Col([
             html.H5('Portfolio', className='text-center'),
             dcc.Graph(id='indicators-ptf',
                       figure=GrapPor.indicatorPeriod(),
                       style={'height':550}),
             ],
-                width={'size': 2, 'offset': 0, 'order': 2}),
+            width={'size': 2, 'offset': 0, 'order': 2}),
+
             dbc.Col([
             html.H5('S&P500', className='text-center'),
             dcc.Graph(id='indicators-sp',
                       figure=GrapPor.indicatorPeriod(),
                       style={'height':550}),
             ],
-                width={'size': 2, 'offset': 0, 'order': 3}),
+            width={'size': 2, 'offset': 0, 'order': 3}),
         ]),
         html.Hr(),
 
@@ -76,9 +76,20 @@ child = dbc.Container(
 
         dbc.Row([
             dbc.Col([
-                html.H5('Comparativo do Retorno do Portifólio no Periodo Extrapolado(%)', className='text-center'),
-                dcc.Graph(id='chat_portfolio_return', style={'height':380}, figure=GrapPor_extra.returnPortfolio())],
-            width={'size': 12, 'offset': 0, 'order': 1}),
+            html.H5('Valor dos Ativos Selecionados($USD)', className='text-center'),
+            dcc.Graph(id='chrt-portfolio-main',
+                      figure=GrapPor_extra.chart_to_portfolio(),
+                      style={'height':550}),
+            ],
+                width={'size': 7, 'offset': 0, 'order': 1}),
+
+            dbc.Col([
+            html.H5('Fronteira Eficiente', className='text-center'),
+            dcc.Graph(id='fronteira-eficiente',
+                      figure=GrapPor.fronteiraEficiente(),
+                      style={'height':550}),
+            ],
+            width={'size': 5, 'offset': 0, 'order': 2}),
         ])
         
     ], 

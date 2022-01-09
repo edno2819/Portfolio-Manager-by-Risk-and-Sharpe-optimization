@@ -1,5 +1,7 @@
 from utils.math_calculate import *
 import plotly.graph_objects as go
+from utils.variaveis import QTD_RETORNO_PERIODICO
+from utils.fronterEficiente import fronteiraEficiente
 
 
 
@@ -120,7 +122,7 @@ class GraphPort:
 
         fig.add_trace(go.Indicator(
             mode = "number+delta",
-            value = 6,
+            value = -3,
             number = {'suffix': " %"},
             title = {"text": "<span style='font-size:0.7em;color:gray'>15 Days</span>"},
             delta = {'position': "bottom", 'reference': 3, 'relative': False},
@@ -128,10 +130,10 @@ class GraphPort:
 
         fig.add_trace(go.Indicator(
             mode = "number+delta",
-            value = 9,
+            value = 4,
             number = {'suffix': " %"},
             title = {"text": "<span style='font-size:0.7em;color:gray'>30 Days</span>"},
-            delta = {'position': "bottom", 'reference': 6, 'relative': False},
+            delta = {'position': "bottom", 'reference': -2, 'relative': False},
             domain = {'row': 2, 'column': 0}))
 
         fig.update_layout(
@@ -148,7 +150,7 @@ class GraphPort:
             '''Calculando o crescimento em porcentagem em relação ao intervalo anterior'''
             porcent = port.taxas_to_dict(taxas)
             result = [0]
-            for c in range(port.data_range-1):
+            for c in range(port.data_range-QTD_RETORNO_PERIODICO, port.data_range-1):
                 count = 0
                 for asset in porcent.keys(): 
                     if len(port.port_porcent[asset])>=c+1:
@@ -163,7 +165,7 @@ class GraphPort:
         data = [go.Bar(name='Portfolio', x=NOME_X, y=VALORES_P)]
 
         for comp in self.port_comp.keys():
-            values_comp = calculate_return_portfolio(taxas, self.port_comp[comp])  
+            values_comp = calculate_return_portfolio([1], self.port_comp[comp])  
             data.append(go.Bar(name=comp, x=NOME_X, y=values_comp))
 
         fig= go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text='Retorno Mensal(%)')))
@@ -199,9 +201,52 @@ class GraphPort:
         fig.add_trace(go.Scatter(x=NOME_X, y=values, mode="lines", name='Portfolio'))
 
         for comp in self.port_comp.keys():
-            values_comp = calculate_return_portfolio(taxas, self.port_comp[comp])  
-            fig.add_trace(go.Scatter(x=NOME_X, y=values_comp, mode="lines",  name='comp'))
+            values_comp = calculate_return_portfolio([1], self.port_comp[comp])  
+            fig.add_trace(go.Scatter(x=NOME_X, y=values_comp, mode="lines",  name=comp))
 
         fig.layout.template = self.CHART_THEME
+
+        return fig
+    
+    
+    def fronteiraEficiente(self):
+        risco, retorno = fronteiraEficiente()
+        fig = go.Figure()
+
+        fig.add_trace(go.Scatter(
+            x=retorno,
+            y=risco,
+            name='Distribuição dos ativos',
+            marker=dict(
+                size=5,
+                cmax=0.04,
+                cmin=-0.03,
+                #color=[0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+                colorbar=dict(
+                    title="Sharpe Ratio"
+                ),
+                colorscale="Viridis"
+            ),
+            mode="markers"
+        ))
+        fig.add_trace(go.Scatter(
+            x=[0.49],
+            y=[0.022],
+            marker=dict(color="red", size=12),
+            mode="markers",
+            name="Portfolio Minimizado",
+            ))
+
+
+        fig.layout.template = self.CHART_THEME
+        fig.update_layout(
+                legend=dict(
+                            font_size=10,
+                            yanchor='middle',
+                            xanchor='right',
+                            ),
+                xaxis_title="Risco do Portfolio",
+                yaxis_title="Retorno do Portfolio")
+
 
         return fig
