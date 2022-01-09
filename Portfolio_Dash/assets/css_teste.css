@@ -1,0 +1,92 @@
+button{
+  background-color: #ffffff; 
+  border:  2px solid rgb(34, 49, 180);
+  color: rgb(34, 49, 180);
+  padding: 8px 28px;
+  text-align: center;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 12px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: 14px;
+}
+
+.button_style_teste{
+  background-color: #ffffff; 
+  border:  2px solid rgb(14, 129, 14);
+  color: rgb(14, 129, 14);
+  padding: 8px 28px;
+  text-align: center;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 12px 20px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: 14px;
+}
+
+
+::-webkit-scrollbar{
+    height: 6px;
+    width: 6px;
+    background: rgb(27, 3, 167);
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(28, 26, 151); 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(28, 26, 151); 
+}
+
+::-webkit-scrollbar-thumb:horizontal{
+    background: rgb(28, 26, 151);
+    border-radius: 10px;
+}
+
+
+body {
+    margin:0;
+    padding:0;
+    width: 100%;
+    font-size: 1.5em;
+    line-height: 1.6;
+    font-weight: 400;
+    background-color: rgb(22, 26, 29);
+  }
+
+.containerMain {
+    margin: auto;
+    padding:5px;
+    width: 95%;
+}
+  
+.Divhead {
+    background-color: rgb(17, 17, 17);
+    padding-top: 12px;
+  }
+
+div {
+  border-radius: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff;
+  }
+
+hr{
+    border: 1.5px solid rgba(3, 0, 37, 0.829);
+    border-radius: 5px;
+  }
