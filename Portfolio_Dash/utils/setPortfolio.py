@@ -54,7 +54,7 @@ def minimize_portfolio(port):
         fitted_params = result.x
         risco = round(port.risk_portfolio(fitted_params),3)
         retorno = round(port.return_portfolio(fitted_params),3)
-        sharpe_ratio = round(port.sharpe_ratio(fitted_params, risk_free_rate=0.006),3)
+        sharpe_ratio = round(port.sharpe_ratio(fitted_params),3)
     else:
         raise ValueError(result.message)
 
@@ -84,7 +84,9 @@ def createPortfolio(assets, interval, start, end):
     set_assets_portfolio_unique(port_ibovespa, ATIVOS['IBOVESPA'], end, end_new, INTERVAL[interval_new])
     port_ibovespa.portifolio_set(interval_new)
 
-    comps = {'S&P 500':port_sp500, 'IBOVESPA':port_ibovespa}
-    GrapPor_extra = GraphPort(port_2, taxas_assets, fitted_params, comps)
+    comps = {'S&P 500':port_sp500, 'IBOVESPA':port_ibovespa, 'Portfolio Bruto':port_2}
+    comps_taxa = {'S&P 500 TAXA':[1], 'IBOVESPA TAXA':[1], 'Portfolio Bruto TAXA':[round(1/len(taxas_assets),3) for c in taxas_assets]}
+
+    GrapPor_extra = GraphPort(port_2, taxas_assets, fitted_params, comps, comps_taxa)
 
     return GrapPor, GrapPor_extra, risco, retorno, sharpe_ratio

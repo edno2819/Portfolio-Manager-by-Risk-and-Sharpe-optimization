@@ -1,18 +1,19 @@
 from utils.math_calculate import *
 import plotly.graph_objects as go
 from utils.variaveis import QTD_RETORNO_PERIODICO
-from utils.fronterEficiente import fronteiraEficiente
+from utils.fronterEficiente import *
 
 
 
 
 class GraphPort:
-    def __init__(self, port, taxas_assets, taxas_dict, port_comp={}) -> None:
+    def __init__(self, port, taxas_assets, taxas_dict, port_comp={}, port_comp_taxa={}) -> None:
         self.port = port
         self.CHART_THEME = 'plotly_dark'  # others include seaborn, ggplot2, plotly_dark
         self.taxas_assets = taxas_assets
         self.taxas_dict = taxas_dict
         self.port_comp = port_comp
+        self.port_comp_taxa = port_comp_taxa
 
 
     def chart_to_portfolio_return_porcent(self, taxas):
@@ -160,15 +161,15 @@ class GraphPort:
 
         values = calculate_return_portfolio(taxas, self.port)  
         VALORES_P = values
-        NOME_X = self.port.dates_range
+        NOME_X = self.port.dates_range[len(self.port.dates_range)-QTD_RETORNO_PERIODICO:]
 
         data = [go.Bar(name='Portfolio', x=NOME_X, y=VALORES_P)]
 
         for comp in self.port_comp.keys():
-            values_comp = calculate_return_portfolio([1], self.port_comp[comp])  
+            values_comp = calculate_return_portfolio(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp])  
             data.append(go.Bar(name=comp, x=NOME_X, y=values_comp))
 
-        fig= go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text='Retorno Mensal(%)')))
+        fig= go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text=f'Retorno {self.port.interval}(%)')))
         fig.layout.template = self.CHART_THEME
         fig.update_layout(barmode='group',
                     autosize=True,
@@ -201,7 +202,7 @@ class GraphPort:
         fig.add_trace(go.Scatter(x=NOME_X, y=values, mode="lines", name='Portfolio'))
 
         for comp in self.port_comp.keys():
-            values_comp = calculate_return_portfolio([1], self.port_comp[comp])  
+            values_comp = calculate_return_portfolio(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp])  
             fig.add_trace(go.Scatter(x=NOME_X, y=values_comp, mode="lines",  name=comp))
 
         fig.layout.template = self.CHART_THEME
@@ -210,38 +211,53 @@ class GraphPort:
     
     
     def fronteiraEficiente(self):
-        risco, retorno = fronteiraEficiente()
-        fig = go.Figure()
+        retorno_port, risco_port = self.port.return_portfolio(self.taxas_assets), self.port.risk_portfolio(self.taxas_assets)
+        #retorno_port2, risco_port2 = self.port.return_portfolio(self.port_comp_taxa['Portfolio Bruto TAXA']), self.port.risk_portfolio(self.port_comp_taxa['Portfolio Bruto TAXA'])
+        
+        p = [round(1/len(self.taxas_assets),3) for c in self.taxas_assets]
+        retorno_port2, risco_port2 = self.port.return_portfolio(p), self.port.risk_portfolio(p)
 
+        risco, retorno = fronteiraEficiente_2(self.port, len(self.taxas_assets))
+        sharpe_ratio = [d/c for c, d in zip(risco, retorno)]
+        fig = go.Figure()
         fig.add_trace(go.Scatter(
-            x=retorno,
-            y=risco,
+            x=risco,
+            y=retorno,
             name='Distribuição dos ativos',
             marker=dict(
-                size=5,
-                cmax=0.04,
-                cmin=-0.03,
-                #color=[0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+                size=7,
+                cmax=max(sharpe_ratio)+0.5,
+                cmin=min(sharpe_ratio)-0.5,
+                color=sharpe_ratio,
                 colorbar=dict(
                     title="Sharpe Ratio"
                 ),
-                colorscale="Viridis"
+                colorscale='Inferno'
             ),
             mode="markers"
         ))
+
         fig.add_trace(go.Scatter(
-            x=[0.49],
-            y=[0.022],
-            marker=dict(color="red", size=12),
+            x=[risco_port],
+            y=[retorno_port],
+            marker=dict(color="green", size=12),
             mode="markers",
             name="Portfolio Minimizado",
+            ))
+
+        fig.add_trace(go.Scatter(
+            x=[risco_port2],
+            y=[retorno_port2],
+            marker=dict(color="blue", size=12),
+            mode="markers",
+            name="Portfolio Bruto",
             ))
 
 
         fig.layout.template = self.CHART_THEME
         fig.update_layout(
                 legend=dict(
-                            font_size=10,
+                            font_size=13,
                             yanchor='middle',
                             xanchor='right',
                             ),

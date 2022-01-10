@@ -1,5 +1,6 @@
 from itertools import combinations
 from utils.math_calculate import *
+from utils.variaveis import TAXA_FREE_RATE
 
 
 class Portifolio:
@@ -13,7 +14,6 @@ class Portifolio:
         self.assets_dates = {}
         self.data_range = 0
         self.dates_range = []
-        self.COLORS = ['red','blue','skyblue','orange', 'green',]
         self.interval = ''
 
 
@@ -90,7 +90,7 @@ class Portifolio:
         porcent = self.taxas_to_dict(porcent)
         retu = 0
         for asset in porcent.keys(): 
-            retu += porcent[asset] * self.assets_return[asset]
+            retu += porcent[asset] * self.assets_return_medio[asset]
         return retu
 
 
@@ -109,15 +109,15 @@ class Portifolio:
         return taxas
 
 
-    def sharpe_ratio(self, porcent, risk_free_rate=0.006):
+    def sharpe_ratio(self, porcent):
         standart_deviation = self.risk_portfolio(porcent)
         return_portfolio = self.return_portfolio(porcent)
-        result = (return_portfolio - risk_free_rate) / standart_deviation
+        result = (return_portfolio - TAXA_FREE_RATE[self.interval]) / standart_deviation
         return result 
 
 
-    def sharpe_ratio_invert(self, porcent, risk_free_rate=0.006):
-        return  1 - self.sharpe_ratio(porcent, risk_free_rate)
+    def sharpe_ratio_invert(self, porcent):
+        return  1 - self.sharpe_ratio(porcent)
 
 
     def calculate_por_period(self, porcent, period_size:int):

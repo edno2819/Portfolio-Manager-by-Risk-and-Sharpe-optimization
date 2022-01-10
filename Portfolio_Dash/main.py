@@ -58,7 +58,7 @@ child = dbc.Container(
 
         dbc.Row([
             dbc.Col([
-                html.H5('Retorno Mensal (%)', className='text-center'),
+                html.H5('Retorno Periódico (%)', className='text-center'),
                 dcc.Graph(id='chrt-portfolio-secondary',
                       figure = GrapPor_extra.returnPeriod(),
                       style={'height':420}),

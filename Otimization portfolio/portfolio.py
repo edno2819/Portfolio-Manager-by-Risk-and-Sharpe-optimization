@@ -75,6 +75,7 @@ class Portifolio:
         self.dates_range = []
         self.COLORS = ['red','blue','skyblue','orange', 'green',]
         self.interval = ''
+        
 
 
     def portifolio_set(self, intervalo):
@@ -150,7 +151,7 @@ class Portifolio:
         porcent = self.taxas_to_dict(porcent)
         retu = 0
         for asset in porcent.keys(): 
-            retu += porcent[asset] * self.assets_return[asset]
+            retu += porcent[asset] * self.assets_return_medio[asset]
         return retu
 
 
@@ -172,7 +173,8 @@ class Portifolio:
     def sharpe_ratio(self, porcent, risk_free_rate=0.006):
         standart_deviation = self.risk_portfolio(porcent)
         return_portfolio = self.return_portfolio(porcent)
-        result = (return_portfolio - risk_free_rate) / standart_deviation
+        #result = (return_portfolio - risk_free_rate) / standart_deviation
+        result = return_portfolio / standart_deviation
         return result 
 
 

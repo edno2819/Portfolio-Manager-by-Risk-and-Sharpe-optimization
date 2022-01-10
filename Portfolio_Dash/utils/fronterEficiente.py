@@ -5,7 +5,7 @@ from cvxopt import blas, solvers
 #pip install chart-studio
 #pip install cvxopt
 
-np.random.seed(123)
+np.random.seed(13)
 
 def rand_weights(n):
     ''' Produces n random weights that sum to 1 '''
@@ -13,10 +13,6 @@ def rand_weights(n):
     return k / sum(k)
 
 def random_portfolio(returns):
-    ''' 
-    Returns the mean and standard deviation of returns for a random portfolio
-    '''
-
     p = np.asmatrix(np.mean(returns, axis=1))
     w = np.asmatrix(rand_weights(returns.shape[0]))
     C = np.asmatrix(np.cov(returns))
@@ -29,46 +25,67 @@ def random_portfolio(returns):
         return random_portfolio(returns)
     return mu, sigma
 
-def optimal_portfolio(returns):
-    n = len(returns)
-    returns = np.asmatrix(returns)
-    
-    N = 100
-    mus = [10**(5.0 * t/N - 1.0) for t in range(N)]
-    
-    # Convert to cvxopt matrices
-    #S = opt.matrix(np.cov(returns))
-    S = np.cov(returns)
-    pbar = opt.matrix(np.mean(returns, axis=1))
-    
-    # Create constraint matrices
-    G = -opt.matrix(np.eye(n))   # negative n x n identity matrix
-    h = opt.matrix(0.0, (n ,1))
-    A = opt.matrix(1.0, (1, n))
-    b = opt.matrix(1.0)
-    
-    # Calculate efficient frontier weights using quadratic programming
-    portfolios = [solvers.qp(mu*S, -pbar, G, h, A, b)['x'] 
-                  for mu in mus]
-    ## CALCULATE RISKS AND RETURNS FOR FRONTIER
-    returns = [blas.dot(pbar, x) for x in portfolios]
-    risks = [np.sqrt(blas.dot(x, S*x)) for x in portfolios]
-    ## CALCULATE THE 2ND DEGREE POLYNOMIAL OF THE FRONTIER CURVE
-    m1 = np.polyfit(returns, risks, 2)
-    x1 = np.sqrt(m1[2] / m1[0])
-    # CALCULATE THE OPTIMAL PORTFOLIO
-    wt = solvers.qp(opt.matrix(x1 * S), -pbar, G, h, A, b)['x']
-    return np.asarray(wt), returns, risks
-
-def fronteiraEficiente():
+def fronteiraEficiente(x):
     ## NUMBER OF ASSETS
     n_assets = 4
     ## NUMBER OF OBSERVATIONS
     n_obs = 1000
     return_vec = np.random.randn(n_assets, n_obs)
     n_portfolios = 500
-    means, stds = np.column_stack([random_portfolio(return_vec) for _ in range(n_portfolios)])
-    stds = [c[0] for c in stds]
-    means = [c[0] for c in means]
+    retorno, risco = np.column_stack([random_portfolio(return_vec) for _ in range(n_portfolios)])
+    risco = [c[0] for c in risco]
+    retorno = [c[0] for c in retorno]
+    risco.sort(), retorno.sort()
+    delta_x = risco[100] - x[0]
+    delta_y = retorno[390] - x[1]
 
-    return means, stds
+    risco = [c - delta_x for c in risco]
+    retorno = [c - delta_y for c in retorno]
+
+    return retorno, risco
+
+def fronteiraEficiente_2(port, n):
+    values = []
+    risco = []
+    retorno = []
+    for c in range(1000):
+        values.append(rand_weights(n))
+
+    for rate in values:
+        retorno.append(port.return_portfolio(rate))
+        risco.append(port.risk_portfolio(rate))
+
+    return risco, retorno
+
+def fronteiraEficiente_3(x):
+    ## NUMBER OF ASSETS
+    n_assets = 4
+    ## NUMBER OF OBSERVATIONS
+    n_obs = 1000
+    return_vec = np.random.randn(n_assets, n_obs)
+    n_portfolios = 500
+    retorno, risco = np.column_stack([random_portfolio(return_vec) for _ in range(n_portfolios)])
+    risco = [c[0] for c in risco]
+    retorno = [c[0] for c in retorno]
+    risco.sort(), retorno.sort()
+    delta_x = risco[100] - x[0]
+    delta_y = retorno[390] - x[1]
+
+    risco = [c - delta_x for c in risco]
+    retorno = [c - delta_y for c in retorno]
+
+
+
+# import plotly.graph_objects as go
+
+# risco, retorno = fronteiraEficiente((0.05, 0.09))
+# plot.scatter(x= ‘Volatilidade’, y = ‘Retorno’, 
+
+# # fig = go.Figure()
+# # fig.add_trace(go.Scatter(
+# #     x=risco,
+# #     y=retorno,
+# #     name='Distribuição dos ativos',
+# #     mode="markers"
+# # ))
+# # fig.show()
