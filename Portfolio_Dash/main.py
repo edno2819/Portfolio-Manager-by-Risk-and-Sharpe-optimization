@@ -1,114 +1,64 @@
 import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output
 from dash import html
-from dash import dcc
 from app import app
-from selectionPortfolio import *
+import dash_core_components as dcc
+
+import utils.variaveis as var
+
+from tabs.port import layout_port
+from tabs.msg_table import datatable_layout
+from tabs.selecao import SelectionPortfolio
+
 
 server = app.server
 
-dados_port = [
-    dbc.Col(html.Div([
-        html.H5(children='Risco do portifólio', style={'text-align': 'center', 'color': 'red'}),
-        html.P(str(risco),style={'text-align': 'center', 'color': 'red', 'fontSize':40})
-    ], className='Divhead')),
 
-    dbc.Col(html.Div([
-        html.Div([
-            html.H5(children='Retorno do portifólio',
-            style={'text-align': 'center', 'color': 'green'})
-        ]),
-        html.P(str(retorno),style={'text-align': 'center', 'color': 'green', 'fontSize':40}),
-    ], className='Divhead')),
-
-    dbc.Col(html.Div([
-        html.Div([
-            html.H5(children='Sharpe-Ratio do portifólio',
-            style={'text-align': 'center', 'color': 'blue'})
-        ]),
-        html.P(str(sharpe_ratio), style={'text-align': 'center', 'color': 'blue', 'fontSize':40}),
-    ], className='Divhead'))
-]
-
-child = dbc.Container(
+app_tabs = html.Div(
     [
-        dbc.Row([
-
-            dbc.Col([
-            html.H5('Comparativo do Retorno do Portifólio no Periodo Extrapolado(%)', className='text-center'),
-            dcc.Graph(id='chat_portfolio_return', style={'height':550}, figure=GrapPor_extra.returnPortfolio()) ],
-            width={'size': 8, 'offset': 0, 'order': 1}),
-
-            dbc.Col([
-            html.H5('Portfolio', className='text-center'),
-            dcc.Graph(id='indicators-ptf',
-                      figure=GrapPor.indicatorPeriod(),
-                      style={'height':550}),
+        dcc.Tabs(
+            [
+                dcc.Tab(label="Portfolio Seleção", value="SelectionPortfolio"),
+                dcc.Tab(label="Portfolio Analise", value="layout_port"),
+                dcc.Tab(label="Dados dos Ativos", value="datatable_layout"),
             ],
-            width={'size': 2, 'offset': 0, 'order': 2}),
-
-            dbc.Col([
-            html.H5('S&P500', className='text-center'),
-            dcc.Graph(id='indicators-sp',
-                      figure=GrapPor.indicatorPeriod(),
-                      style={'height':550}),
-            ],
-            width={'size': 2, 'offset': 0, 'order': 3}),
-        ]),
-        html.Hr(),
-
-        dbc.Row([
-            dbc.Col([
-                html.H5('Retorno Periódico (%)', className='text-center'),
-                dcc.Graph(id='chrt-portfolio-secondary',
-                      figure = GrapPor_extra.returnPeriod(),
-                      style={'height':420}),
-            ],
-                width={'size': 8, 'offset': 0, 'order': 1}),
-            dbc.Col([
-                html.H5('Frações dos Ativos', className='text-center'),
-                dcc.Graph(id='pie-top15',
-                      figure = GrapPor.circle_chart_portifolio(),
-                      style={'height':380}),
-            ],
-                width={'size': 4, 'offset': 0, 'order': 2}),
-        ]),
-        html.Hr(),
-
-        dbc.Row([
-            dbc.Col([
-            html.H5('Valor dos Ativos Selecionados($USD)', className='text-center'),
-            dcc.Graph(id='chrt-portfolio-main',
-                      figure=GrapPor_extra.chart_to_portfolio(),
-                      style={'height':550}),
-            ],
-                width={'size': 7, 'offset': 0, 'order': 1}),
-
-            dbc.Col([
-            html.H5('Fronteira Eficiente', className='text-center'),
-            dcc.Graph(id='fronteira-eficiente',
-                      figure=GrapPor.fronteiraEficiente(),
-                      style={'height':550}),
-            ],
-            width={'size': 5, 'offset': 0, 'order': 2}),
-        ])
-        
-    ], 
-    fluid=False)
+            id="tabs",
+            className='custom-tabs-container',
+            parent_className='custom-tabs',
+        ),
+    ]
+    
+)
 
 
-app.layout = dbc.Container([
+app.layout =  dbc.Container([
     html.Hr(),
     html.Div(html.Img(src=r'assets\portfolio-png.png', style={'height':'60px', 'width':'70px'}), style={"textAlign": "center"}),
     dbc.Row(dbc.Col(html.H1("Portfolio Análise", style={"textAlign": "center"}), width=12)),
     html.Hr(),
-    dbc.Row(dados_port, className="mb-3"),
-    dbc.Row(child),
+    dbc.Row(dbc.Col(app_tabs, width=16)),
+    html.Hr(),
     html.Div(id='content', children=[]),
     html.Br(),
     html.H1("DashBoard para TCC", style={"textAlign": "right"})
 
     ],className='containerMain')
+ 
 
+
+@app.callback(
+    Output("content", "children"),
+    Input("tabs", "value"),
+)
+def switch_tab(tab_chosen): 
+    if tab_chosen == "SelectionPortfolio":
+        return SelectionPortfolio
+    elif tab_chosen == "layout_port":
+        return layout_port
+    elif tab_chosen == "datatable_layout":
+        return datatable_layout
+    return SelectionPortfolio
+        
 
 if __name__=='__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

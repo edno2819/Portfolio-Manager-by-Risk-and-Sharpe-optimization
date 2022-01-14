@@ -77,7 +77,6 @@ class Portifolio:
         self.interval = ''
         
 
-
     def portifolio_set(self, intervalo):
         self.interval = intervalo
         self.set_max_datas()
@@ -118,14 +117,14 @@ class Portifolio:
             self.assets_cov[asset1+'/'+asset2] = covariancia(self.port_porcent[asset1], self.port_porcent[asset2])
 
     
-    def risk_portfolio(self, porcent:list):
-        porcent = self.taxas_to_dict(porcent)
+    def risk_portfolio(self, taxas:list):
+        taxas = self.taxas_to_dict(taxas)
         risk = []
-        for asset in porcent.keys(): 
-            risk.append((porcent[asset]**2) * self.assets_var[asset])
+        for asset in taxas.keys(): 
+            risk.append((taxas[asset]**2) * self.assets_var[asset])
 
         for asset1, asset2 in self.comb:
-            risk.append( 2 * porcent[asset1] * porcent[asset2] * self.assets_cov[asset1+'/'+asset2])
+            risk.append( 2 * taxas[asset1] * taxas[asset2] * self.assets_cov[asset1+'/'+asset2])
 
         return sum(risk)**(0.5)
 
@@ -258,7 +257,8 @@ class Portifolio:
             plt.show()
     
 
-    def circle_chart_portifolio(self, taxas_assets:dict):
+    def circle_chart_portifolio(self, taxas_assets:list):
+        taxas_assets = self.taxas_to_dict(taxas_assets)
         lis = []
         name_lis = []
         for asset in taxas_assets.keys():

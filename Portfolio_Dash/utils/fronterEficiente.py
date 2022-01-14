@@ -1,6 +1,4 @@
 import numpy as np
-import cvxopt as opt
-from cvxopt import blas, solvers
 
 #pip install chart-studio
 #pip install cvxopt

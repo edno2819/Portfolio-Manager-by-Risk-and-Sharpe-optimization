@@ -7,6 +7,7 @@ class Portifolio:
     def __init__(self) -> None:
         self.port = {}
         self.port_porcent = {}
+        self.port_porcent_init = {}
         self.assets_var = {}
         self.assets_cov = {}
         self.assets_return_medio = {}
@@ -17,14 +18,10 @@ class Portifolio:
         self.interval = ''
 
 
-    def portifolio_set(self, intervalo):
-        self.interval = intervalo
-        self.set_max_datas()
-
-
     def add_asset(self, name:str, serie_temporal_close:list):
         self.port[name] = serie_temporal_close
         self.port_porcent[name] = datas_to_porcent(serie_temporal_close)
+        self.port_porcent_init[name] = datas_to_porcent_init(serie_temporal_close)
         if len(serie_temporal_close)>self.data_range:
             self.data_range = len(serie_temporal_close)
     

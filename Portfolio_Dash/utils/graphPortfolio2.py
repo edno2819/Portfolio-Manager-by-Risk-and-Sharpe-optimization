@@ -1,6 +1,6 @@
 from utils.math_calculate import *
 import plotly.graph_objects as go
-from utils.variaveis import QTD_RETORNO_PERIODICO
+from utils.variaveis import QTD_RETORNO_PERIODICO, CHART_THEME
 from utils.fronterEficiente import *
 
 
@@ -9,23 +9,25 @@ from utils.fronterEficiente import *
 class GraphPort:
     def __init__(self, port, taxas_assets:list, port_comp={}, port_comp_taxa={}) -> None:
         self.port = port
-        self.CHART_THEME = 'plotly_dark'  # others include seaborn, ggplot2, plotly_dark
+        self.CHART_THEME = CHART_THEME
         self.taxas_assets = taxas_assets
         self.port_comp = port_comp
         self.port_comp_taxa = port_comp_taxa
+    
 
-
-    def chart_to_portfolio(self):
+    def graphAssets(self):
         fig = go.Figure() 
         annotations = []
-        for asset in self.port.port.keys():   
-            fig.add_trace(go.Scatter(x=self.port.assets_dates[asset], y=self.port.port[asset],
+        port = self.port_comp['Portfolio Bruto']
+
+        for asset in port.port.keys():   
+            fig.add_trace(go.Scatter(x=port.assets_dates[asset], y=port.port[asset],
                                 mode="lines",  # you can also use "lines+markers", or just "markers"
                                 name=asset))
 
-            annotations.append(dict(xref='paper', x=1.01, y=self.port.port[asset][-1],
+            annotations.append(dict(xref='paper', x=1.01, y=port.port[asset][-1],
                             xanchor='left', yanchor='middle',
-                            text=f'{round(self.port.port[asset][-1],2)*100}%',
+                            text=f'{round(port.port[asset][-1],2)*100}%',
                             font=dict(family='Arial',
                                         size=16),
                             showarrow=False))
@@ -63,7 +65,7 @@ class GraphPort:
     def circle_chart_portifolio(self):
         lis = []
         name_lis = []
-        taxas_dict = self.port.taxas_to_dict(self.taxas_assets)
+        taxas_dict = self.port[-1].taxas_to_dict(self.taxas_assets[-1])
         for asset in taxas_dict.keys():
             if taxas_dict[asset]>0.01:
                 lis.append(taxas_dict[asset])
@@ -118,7 +120,7 @@ class GraphPort:
             '''Calculando o crescimento em porcentagem em relação ao intervalo anterior'''
             porcent = port.taxas_to_dict(taxas)
             result = [0]
-            for c in range(port.data_range-QTD_RETORNO_PERIODICO, port.data_range-1):
+            for c in range(0, port.data_range-1):
                 count = 0
                 for asset in porcent.keys(): 
                     if len(port.port_porcent[asset])>=c+1:
@@ -126,17 +128,23 @@ class GraphPort:
                 result.append(count)
             return result
 
-        values = calculate_return_portfolio(self.taxas_assets, self.port)  
-        VALORES_P = values
-        NOME_X = self.port.dates_range[len(self.port.dates_range)-QTD_RETORNO_PERIODICO:]
 
-        data = [go.Bar(name='Portfolio', x=NOME_X, y=VALORES_P)]
+        values, dates = [], []
+        for port, pesos in zip(self.port, self.taxas_assets):
+            values += calculate_return_portfolio(pesos, port)
+            dates += port.dates_range
+
+        values = values[len(values)-QTD_RETORNO_PERIODICO:]
+        dates = dates[len(dates)-QTD_RETORNO_PERIODICO:]
+
+
+        data = [go.Bar(name='Portfolio', x=dates, y=values)]
 
         for comp in self.port_comp.keys():
             values_comp = calculate_return_portfolio(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp])  
-            data.append(go.Bar(name=comp, x=NOME_X, y=values_comp))
+            data.append(go.Bar(name=comp, x=dates, y=values_comp))
 
-        fig= go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text=f'Retorno {self.port.interval}(%)')))
+        fig= go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text=f'Retorno {self.port[-1].interval}(%)')))
         fig.layout.template = self.CHART_THEME
         fig.update_layout(barmode='group',
                     autosize=True,
@@ -146,8 +154,18 @@ class GraphPort:
 
 
     def returnPortfolio(self):
-        taxas = self.taxas_assets
         annotations = []
+
+        def calculate_return_portfolio_unique(taxas, port):
+            porcent = port.taxas_to_dict(taxas)
+            result = [0]
+            for c in range(port.data_range-1):
+                count = 0
+                for asset in porcent.keys(): 
+                    if len(port.port[asset])>c+1:
+                        count += port.port_porcent_init[asset][c] * porcent[asset]
+                result.append(count)
+            return result
 
         def calculate_return_portfolio(taxas, port):
             porcent = port.taxas_to_dict(taxas)
@@ -155,18 +173,23 @@ class GraphPort:
             for c in range(port.data_range-1):
                 count = 0
                 for asset in porcent.keys(): 
-                    if len(port.port[asset])>=c+1:
-                        data_to_porcent = [0]
-                        data_to_porcent += datas_to_porcent_init(port.port[asset])
-                        count += porcent[asset] * data_to_porcent[c]
+                    if len(port.port[asset])>c+1:
+                        count += port.port_porcent_init[asset][c] * porcent[asset]
                 result.append(count)
             return result
 
-        values = calculate_return_portfolio(taxas, self.port)  
+        values, dates = [0], []
+        for port, pesos in zip(self.port, self.taxas_assets):
+            dates += port.dates_range
 
-        NOME_X = self.port.dates_range
+        for port, pesos in zip(self.port, self.taxas_assets):
+            x = [ c+values[-1] for c in calculate_return_portfolio(pesos, port)]
+            values += x
+            
+        values = values[1:]
         fig = go.Figure() 
-        fig.add_trace(go.Scatter(x=NOME_X, y=values, mode="lines", name='Portfolio'))
+        fig.add_trace(go.Scatter(x=dates, y=values, mode="lines", name='Portfolio'))
+
         annotations.append(dict(xref='paper', x=1.01, y=values[-1],
                             xanchor='left', yanchor='middle',
                             text=f'{round(values[-1],2)*100}%',
@@ -174,9 +197,10 @@ class GraphPort:
                                         size=16),
                             showarrow=False))
 
+
         for comp in self.port_comp.keys():
-            values_comp = calculate_return_portfolio(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp])  
-            fig.add_trace(go.Scatter(x=NOME_X, y=values_comp, mode="lines",  name=comp))
+            values_comp = calculate_return_portfolio_unique(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp])  
+            fig.add_trace(go.Scatter(x=dates, y=values_comp, mode="lines",  name=comp))
 
             annotations.append(dict(xref='paper', x=1.01, y=values_comp[-1],
                                         xanchor='left', yanchor='middle',
@@ -207,13 +231,14 @@ class GraphPort:
     
     
     def fronteiraEficiente(self):
-        retorno_port, risco_port = self.port.return_portfolio(self.taxas_assets), self.port.risk_portfolio(self.taxas_assets)
-        #retorno_port2, risco_port2 = self.port.return_portfolio(self.port_comp_taxa['Portfolio Bruto TAXA']), self.port.risk_portfolio(self.port_comp_taxa['Portfolio Bruto TAXA'])
+        port = self.port_comp['Portfolio Bruto']
+        taxas = self.taxas_assets[0]
+        retorno_port, risco_port = port.return_portfolio(taxas), port.risk_portfolio(taxas)
         
-        p = [round(1/len(self.taxas_assets),3) for c in self.taxas_assets]
-        retorno_port2, risco_port2 = self.port.return_portfolio(p), self.port.risk_portfolio(p)
+        p = [round(1/len(taxas),3) for c in taxas]
+        retorno_port2, risco_port2 = port.return_portfolio(p), port.risk_portfolio(p)
 
-        risco, retorno = fronteiraEficiente_2(self.port, len(self.taxas_assets))
+        risco, retorno = fronteiraEficiente_2(port, len(taxas))
         sharpe_ratio = [d/c for c, d in zip(risco, retorno)]
         fig = go.Figure()
         fig.add_trace(go.Scatter(
