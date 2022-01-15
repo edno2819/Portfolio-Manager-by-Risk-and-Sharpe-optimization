@@ -7,8 +7,8 @@ import dash_core_components as dcc
 import utils.variaveis as var
 
 from tabs.port import layout_port
-from tabs.msg_table import datatable_layout
 from tabs.selecao import SelectionPortfolio
+#from tabs.msg_table import datatable_layout
 
 
 server = app.server
@@ -18,9 +18,9 @@ app_tabs = html.Div(
     [
         dcc.Tabs(
             [
-                dcc.Tab(label="Portfolio Seleção", value="SelectionPortfolio"),
-                dcc.Tab(label="Portfolio Analise", value="layout_port"),
-                dcc.Tab(label="Dados dos Ativos", value="datatable_layout"),
+                dcc.Tab(label="Portfólio Seleção", value="SelectionPortfolio"),
+                dcc.Tab(label="Portfólio Análise", value="layout_port"),
+                #dcc.Tab(label="Dados dos Ativos", value="datatable_layout"),
             ],
             id="tabs",
             className='custom-tabs-container',
@@ -34,7 +34,7 @@ app_tabs = html.Div(
 app.layout =  dbc.Container([
     html.Hr(),
     html.Div(html.Img(src=r'assets\portfolio-png.png', style={'height':'60px', 'width':'70px'}), style={"textAlign": "center"}),
-    dbc.Row(dbc.Col(html.H1("Portfolio Análise", style={"textAlign": "center"}), width=12)),
+    dbc.Row(dbc.Col(html.H1("Portfólio Análise", style={"textAlign": "center"}), width=12)),
     html.Hr(),
     dbc.Row(dbc.Col(app_tabs, width=16)),
     html.Hr(),
@@ -55,8 +55,7 @@ def switch_tab(tab_chosen):
         return SelectionPortfolio
     elif tab_chosen == "layout_port":
         return layout_port
-    elif tab_chosen == "datatable_layout":
-        return datatable_layout
+
     return SelectionPortfolio
         
 

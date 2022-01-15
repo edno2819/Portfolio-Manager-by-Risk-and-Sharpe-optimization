@@ -62,35 +62,45 @@ child = dbc.Container(
                 html.H5('Retorno Periódico (%)', className='text-center'),
                 dcc.Graph(id='returnPeriod',
                       figure = Figs.returnPeriod(),
-                      style={'height':420}),
-            ],
-                width={'size': 8, 'offset': 0, 'order': 1}),
+                      style={'height':550}),
+
+            ],width={'size': 6, 'offset': 0, 'order': 1}),
+
+            dbc.Col([
+                html.H5('Valor dos Ativos Selecionados($USD)', className='text-center'),
+                dcc.Graph(id='graphAssets',
+                        figure=Figs.graphAssets(),
+                        style={'height':550}),
+            ],width={'size': 6, 'offset': 0, 'order': 1}),
+        ]),
+        html.Hr(),
+        html.Br(),
+        html.H5('Atualizações do Portfólio', className='text-center'),
+        dbc.Row([dcc.Slider(
+                min=0,
+                max=10,
+                step=1,
+                value=0,
+                tooltip={"placement": "bottom", "always_visible": True},
+                id='slider-port'
+            )]),
+
+        dbc.Row([
             dbc.Col([
                 html.H5('Frações dos Ativos', className='text-center'),
                 dcc.Graph(id='circle_chart_portifolio',
                       figure =Figs.figPie(),
-                      style={'height':380}),
-            ],
-                width={'size': 4, 'offset': 0, 'order': 2}),
-        ]),
-        html.Hr(),
+                      style={'height':400}),
 
-        dbc.Row([
-            dbc.Col([
-            html.H5('Valor dos Ativos Selecionados($USD)', className='text-center'),
-            dcc.Graph(id='graphAssets',
-                      figure=Figs.graphAssets(),
-                      style={'height':550}),
-            ],
-                width={'size': 7, 'offset': 0, 'order': 1}),
+            ],width={'size': 6, 'offset': 0, 'order': 2}),
 
             dbc.Col([
-            html.H5('Fronteira Eficiente', className='text-center'),
-            dcc.Graph(id='fronteiraEficiente',
-                      figure=Figs.fronteiraEficiente(),
-                      style={'height':550}),
+                html.H5('Fronteira Eficiente', className='text-center'),
+                dcc.Graph(id='fronteiraEficiente',
+                        figure=Figs.fronteiraEficiente(),
+                        style={'height':400}),
             ],
-            width={'size': 5, 'offset': 0, 'order': 2}),
+            width={'size': 6, 'offset': 0, 'order': 2}),
         ])
         
     ], 
@@ -111,10 +121,13 @@ layout_port = [dbc.Row(dados_port, className="mb-3"), dbc.Row(child)]
     Output("circle_chart_portifolio", "figure"),
     Output("graphAssets", "figure"),
     Output("fronteiraEficiente", "figure"),
+    Output("slider-port", "max"),
     Input("Atualizar", "n_clicks"),
+    Input("slider-port", "value"),
 
 )
-def update_graph_temas(n_clicks):
+def update_graph_temas(n_clicks, value):
+    no = dash.no_update
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'n_clicks' in changed_id:
         risco = Figs.risco
@@ -128,8 +141,12 @@ def update_graph_temas(n_clicks):
         fig_6 = Figs.graphAssets()
         fig_7 = Figs.fronteiraEficiente()   
 
-        return risco, retur, sharpe, fig_1, fig_2, fig_3, fig_4, fig_5, fig_6, fig_7
-    return dash.no_update
+        return risco, retur, sharpe, fig_1, fig_2, fig_3, fig_4, fig_5, fig_6, fig_7, len(Figs.GrapPor.port)
+    else:
+        fig_6 = Figs.figPie(value)
+        fig_7 = Figs.fronteiraEficiente(value)  
+        return no, no, no, no, no, no, no, fig_6, no, fig_7, no
+    #return dash.no_update
 
 
 

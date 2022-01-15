@@ -2,7 +2,7 @@
 # ------------------------- variaveis para a análise ---------------------------------------------------------------------------
 
 TAXA_FREE_RATE = {'5 Dias':0.0012,'1 Semana':0.0015,'1 Mês':0.006,'3 Mêses':0.018}
-QTD_RETORNO_PERIODICO = 20
+QTD_RETORNO_PERIODICO = 10
 ATIVOS = {'S&P 500': '^GSPC', 'IBOVESPA':'^BVSP'}
 
 
@@ -16,7 +16,7 @@ ASSETS = {
 'BBSE3.SA':'BBSE3.SA', 'ENBR3.SA':'ENBR3.SA', 'WEGE3.SA':'WEGE3.SA', 'B3SA3.SA':'B3SA3.SA',
 'LREN3.SA':'LREN3.SA'
 }
-TIPOS_OTIMIZACAO = [{'label': 'Risco', 'value': 'risco'},{'label': 'Retorno', 'value': 'retorno'},{'label': 'Sharpe-Ratio', 'value': 'sharpe'}]
+TIPOS_OTIMIZACAO = [{'label': ' Risco', 'value': 'risco'},{'label': ' Retorno', 'value': 'retorno'},{'label': ' Sharpe-Ratio', 'value': 'sharpe'}]
 
 
 # ------------------------- style ---------------------------------------------------------------------------

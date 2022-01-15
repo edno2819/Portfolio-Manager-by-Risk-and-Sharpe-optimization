@@ -1,3 +1,4 @@
+from tkinter import N
 from utils.math_calculate import *
 import plotly.graph_objects as go
 from utils.variaveis import QTD_RETORNO_PERIODICO, CHART_THEME
@@ -62,14 +63,18 @@ class GraphPort:
         return fig
 
 
-    def circle_chart_portifolio(self):
+    def circle_chart_portifolio(self, n=-1):
         lis = []
         name_lis = []
-        taxas_dict = self.port[-1].taxas_to_dict(self.taxas_assets[-1])
+        taxas_dict = self.port[n].taxas_to_dict(self.taxas_assets[n])
         for asset in taxas_dict.keys():
             if taxas_dict[asset]>0.01:
                 lis.append(taxas_dict[asset])
                 name_lis.append(asset)
+        
+        date_start = self.port[n].dates[0].__str__()[:10]
+        date_end = self.port[n].dates[-1].__str__()[:10]
+        num = n+1 if n!=-1 else len(self.port)
 
         fig = go.Figure()
         fig.layout.template = self.CHART_THEME
@@ -77,6 +82,7 @@ class GraphPort:
         fig.update_traces(hole=.7, hoverinfo="label+percent")
         fig.update_traces(textposition='outside', textinfo='label+percent')
         fig.update_layout(showlegend=False)
+        fig.update_layout(title=go.layout.Title(text=f'N°{num}: {date_start}|{date_end}'))
         fig.update_layout(margin = dict(t=50, b=50, l=25, r=25))
         return fig
 
@@ -144,11 +150,10 @@ class GraphPort:
             values_comp = calculate_return_portfolio(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp])  
             data.append(go.Bar(name=comp, x=dates, y=values_comp))
 
-        fig= go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text=f'Retorno {self.port[-1].interval}(%)')))
+        fig = go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text=f'Retorno {self.port[-1].interval}(%)')))
         fig.layout.template = self.CHART_THEME
         fig.update_layout(barmode='group',
                     autosize=True,
-                    height=380,
                     yaxis_range=[-1*max(values),max(values)])
         return fig
 
@@ -230,9 +235,10 @@ class GraphPort:
         return fig
     
     
-    def fronteiraEficiente(self):
-        port = self.port_comp['Portfolio Bruto']
-        taxas = self.taxas_assets[0]
+    def fronteiraEficiente(self, n=-1):
+        #port = self.port_comp['Portfolio Bruto']
+        port = self.port[n]
+        taxas = self.taxas_assets[n]
         retorno_port, risco_port = port.return_portfolio(taxas), port.risk_portfolio(taxas)
         
         p = [round(1/len(taxas),3) for c in taxas]
@@ -240,6 +246,12 @@ class GraphPort:
 
         risco, retorno = fronteiraEficiente_2(port, len(taxas))
         sharpe_ratio = [d/c for c, d in zip(risco, retorno)]
+
+
+        date_start = port.dates[0].__str__()[:10]
+        date_end = port.dates[-1].__str__()[:10]
+        num = n+1 if n!=-1 else len(self.port)
+
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=risco,
@@ -247,8 +259,8 @@ class GraphPort:
             name='Distribuição dos ativos',
             marker=dict(
                 size=7,
-                cmax=max(sharpe_ratio)+0.5,
-                cmin=min(sharpe_ratio)-0.5,
+                cmax=max(sharpe_ratio),
+                cmin=min(sharpe_ratio),
                 color=sharpe_ratio,
                 colorbar=dict(
                     title="Sharpe Ratio"
@@ -276,6 +288,7 @@ class GraphPort:
 
 
         fig.layout.template = self.CHART_THEME
+        fig.update_layout(title=go.layout.Title(text=f'N°{num}: {date_start}|{date_end}'))
         fig.update_layout(
                 legend=dict(
                             font_size=13,

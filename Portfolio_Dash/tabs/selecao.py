@@ -11,7 +11,6 @@ from selectionPortfolio import Figs
 
 
 
-
 image_card = dbc.Card(
     [
         dbc.CardBody(
@@ -19,7 +18,7 @@ image_card = dbc.Card(
                 html.H4("Filtros"),
                 html.Hr(),
 
-                html.H6("Selecione o intervalo de busca:", className="card-text"),
+                html.H6("intervalo de busca:", className="card-text"),
                 dcc.DatePickerRange(
                     month_format='D/MM/Y',
                     display_format='D/MM/Y',
@@ -32,43 +31,45 @@ image_card = dbc.Card(
                 ),
 
                 html.Hr(),
-                html.H6("Selecione o tamanho de cada Tick:", className="card-text"),
+                html.H6("tamanho de cada Tick:", className="card-text"),
                 dcc.Dropdown(
                             options=[{'label':key, 'value':key} for key in var.INTERVAL.keys()],
-                            placeholder="Selecione o intervalo",
+                            placeholder="intervalo",
                             id='interval'
                         ),
                 html.Hr(),
-                html.H6("Selecione o tamanho do cálculo:", className="card-text"),
 
                 dbc.Row([
-                    dbc.Col(dcc.Input(
-                            id="atualization", type="number", placeholder="input with range",
-                            min=10, max=1000, step=3, value=6
-                        ),),
-                    dbc.Col(dcc.Input(
-                        id="dates_to_calculate", type="number", placeholder="input with range",
-                        min=5, max=500, step=3, value=52),
-                    )], justify="around"),
+                    dbc.Col([
+                        html.H6("Intervalo de Atualização:", className="card-text"),
+                        dcc.Input(id="atualization", type="number", placeholder="input with range",min=1, max=1000, step=3, value=6)
+                        ]),
+                    dbc.Col([
+                        html.H6("Intervalo dos Cálculos:", className="card-text"),
+                        dcc.Input(id="dates_to_calculate", type="number", placeholder="input with range",min=5, max=500, step=3, value=52)
+                        ])
+                    ], justify="around"),
 
                 html.Br(),
                 html.Hr(),
-                html.H6("Selecione as Ações:", className="card-text"),
+                html.H6(" Ações:", className="card-text"),
                 dcc.Dropdown(id='assets', 
                         options=[{'label':key, 'value':key} for key in var.ASSETS.keys()],
                         multi=True, style={"color": "#000000"},
                         placeholder="Selecione as Ações",),
 
                 html.Hr(),
-                html.H6("Selecione a variável de Otimização:", className="card-text"),
+                html.H6("variável de Otimização:", className="card-text"),
                 dcc.RadioItems(
                         options=var.TIPOS_OTIMIZACAO,
                         value='sharpe',
-                        labelStyle={'display': 'inline-block'},
+                        labelStyle={'display': 'inline-block', 'padding-right':'18px'},
                         id='optimize',
                         labelClassName='radio'
                     ),
-                html.Button('Comfirmar', id='submit-filter', n_clicks=0)
+                html.Hr(),
+                dcc.Loading(id="ls-loading-1", children=[html.Button('Comfirmar', id='submit-filter', n_clicks=0)], type="default")
+
             ]
         ),
     ],
@@ -80,7 +81,7 @@ SelectionPortfolio = html.Div([
 ])
 
 @app.callback(
-    Output("optimize", "options"),
+    Output("submit-filter", "n_clicks"),
     Input("submit-filter", "n_clicks"),
     Input('date-range', 'start_date'),
     Input('date-range', 'end_date'),

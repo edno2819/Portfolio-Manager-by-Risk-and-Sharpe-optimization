@@ -7,14 +7,27 @@ from utils.variaveis import *
 import pandas as pd
 
 
+def setDataClose(assets, start, end, interval):
+    dataset = yf.download(assets, start=start, end=end, interval=interval)
+    names_to_drop = []
+    #VERIFICANDO ATIVOS SEM VALORES
+    num_nan = dataset['Adj Close'].isna().sum()
+    for ativo in num_nan.keys():
+        if num_nan[ativo]>min(num_nan):
+            names_to_drop.append(ativo)
+            print(f'Erro no ativo {ativo}')
+
+    #DELETANDO LINHAS VAZIAS
+    CLOSES = dataset['Adj Close'].drop(columns=names_to_drop)
+    CLOSES = CLOSES.dropna()
+
+    return dataset , CLOSES
+
 
 def createSetPortfolio(assets, start, end, interval, atualization, dates_to_calculate):
     ports = []
-    data = yf.download(assets, start=start, end=end, interval=interval)
-    #data.to_excel('assets_dados_semanal.xlsx')
-    #data = pd.read_excel('assets_dados_semanal.xlsx', header=[0, 1])
-    CLOSES = data['Adj Close']
-    CLOSES = CLOSES.dropna()
+    dataset , CLOSES = setDataClose(assets, start, end, interval)
+
     
     for c in range(dates_to_calculate, len(list(CLOSES.index)), atualization):
         ports.append(Portifolio())
@@ -36,11 +49,7 @@ def createSetPortfolio(assets, start, end, interval, atualization, dates_to_calc
 
 def createSetPortfolioToMinimize(assets, start, end, interval, atualization, dates_to_calculate):
     ports = []
-    data = yf.download(assets, start=start, end=end, interval=interval)
-    #data.to_excel('assets_dados_semanal.xlsx')
-    #data = pd.read_excel('assets_dados_semanal.xlsx', header=[0, 1])
-    CLOSES = data['Adj Close']
-    CLOSES = CLOSES.dropna()
+    dataset , CLOSES = setDataClose(assets, start, end, interval)
     
     for c in range(dates_to_calculate, len(list(CLOSES.index)), atualization):
         ports.append(Portifolio())
@@ -61,15 +70,11 @@ def createSetPortfolioToMinimize(assets, start, end, interval, atualization, dat
 
 
 def set_assets_portfolio(port, assets, start, end, interval, dates_to_calculate):
-    data = yf.download(assets, start=start, end=end, interval=interval)
-    dataset = data.dropna()
-    #data = pd.read_excel('assets_dados_semanal.xlsx', header=[0, 1])
-    CLOSES = data['Adj Close']
+    dataset , CLOSES = setDataClose(assets, start, end, interval)
+
     port.dates =  list(CLOSES.dropna().index)
     assets_name = list(CLOSES.columns)
     
-
-
     for asset in assets_name:
         data =  np.array(list(CLOSES[asset].array))
         data = data[np.logical_not(np.isnan(data))][dates_to_calculate:]
@@ -85,9 +90,9 @@ def set_assets_portfolio(port, assets, start, end, interval, dates_to_calculate)
 
 def set_assets_portfolio_unique(port, asset, start, end, interval, dates_to_calculate):
     data = yf.download(asset, start=start, end=end, interval=interval)
-    #data = pd.read_excel('assets_dados_semanal.xlsx', header=[0, 1])
     CLOSES = data['Adj Close']
     CLOSES = CLOSES.dropna()
+
     port.dates =  list(CLOSES.index)
     
     data =  np.array(list(CLOSES.array))
@@ -160,11 +165,17 @@ def createPortfolio(assets, interval, start, end, atualization, dates_to_calcula
     ports_to_mini = createSetPortfolioToMinimize(assets, start, end, INTERVAL[interval], atualization, dates_to_calculate)
 
     if ports_to_mini==[]:
-        return False, False, False, False
+        return False, False, False, False, False
+
+    ports = createSetPortfolio(assets, start, end, INTERVAL[interval], atualization, dates_to_calculate)
+
+    if ports_to_mini[-1].assets_cov=={}:
+        del ports_to_mini[-1]
+        del ports[-1]
 
     ports_to_mini = setPortfolio(ports_to_mini, interval)
     vetor_pesos = minimize_ports(ports_to_mini, tipo)
-    ports = createSetPortfolio(assets, start, end, INTERVAL[interval], atualization, dates_to_calculate)
+
     ports = setPortfolio(ports, interval)
 
     risco, retur, sharpe = calculateRiscoMedio(ports, vetor_pesos)

@@ -13,21 +13,22 @@ class SetPara:
 
     def refresh(self, assets, interval, start, end, atualization, dates_to_calculate, tipo):
         GrapPor, risco, retur, sharpe, dataset = createPortfolio(assets, interval, start, end, atualization, dates_to_calculate, tipo)
-        self.GrapPor = GrapPor
-        self.risco = risco
-        self.retur = retur
-        self.sharpe = sharpe
-        self.dataset = dataset
+        if GrapPor!=False:
+            self.GrapPor = GrapPor
+            self.risco = risco
+            self.retur = retur
+            self.sharpe = sharpe
+            self.dataset = dataset
     
     def returnAvoid(self):
         fig = go.Figure() 
         fig.layout.template = CHART_THEME
         return fig
     
-    def figPie(self):
+    def figPie(self, n=0):
         if type(self.GrapPor)==list:
             return self.returnAvoid()
-        return self.GrapPor.circle_chart_portifolio()
+        return self.GrapPor.circle_chart_portifolio(n)
 
     def graphAssets(self):
         if type(self.GrapPor)==list:
@@ -49,10 +50,10 @@ class SetPara:
             return self.returnAvoid()
         return self.GrapPor.returnPortfolio()
 
-    def fronteiraEficiente(self):
+    def fronteiraEficiente(self, n=0):
         if type(self.GrapPor)==list:
             return self.returnAvoid()
-        return self.GrapPor.fronteiraEficiente()
+        return self.GrapPor.fronteiraEficiente(n)
 
 
     
