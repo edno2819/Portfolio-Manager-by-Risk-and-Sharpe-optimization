@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaperPass</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/iconfont.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="assessment-body">
+        <div class="MB15">
+            <div class="clearfix">
+                <div class="col-1 pull-left">
+                    <div class="assessment-area basic-information">
+                        <h4 data-lang="BasicInformation"></h4>
+                        <ul class="papersource-list-group">
+                            <li>
+                                <div data-lang="PaperTitle"></div>
+                                <div class="paper-title">Otimização de portfólio</div>
+                            </li>
+                            <li>
+                                <div data-lang="PaperTime"></div>
+                                <div>2022-01-18 20:49:01(+00:00 UTC)</div>
+                            </li>
+                            <li>
+                                <div data-lang="PaperNumber"></div>
+                                <div>4393</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="similar col-2 pull-left">
+                    <div class="assessment-area">
+                        <h4 data-lang="OverallSimilarity"></h4>
+                        <div class="first-level">
+                            <div class="similar-progress-group">
+                                <span class="similar-type" data-lang="OverallSimilarity"></span>
+                                <span class="progress gray MR10">
+                                    <span class="progress-bar orange" style="width: 56%;"></span>
+                                </span>
+                                <span class="g-font-color orange percentage-span">56%</span>
+                            </div>
+                            <div class="second-level">
+                                <div class="similar-progress-group">
+                                    <span class="similar-type" data-lang="LocalLibrarySimilarity"></span>
+                                    <span class="progress gray MR10">
+                                        <span class="progress-bar green" style="width: 5%;"></span>
+                                    </span>
+                                    <span class="g-font-color green percentage-span">5%</span>
+                                </div>
+                                <div class="similar-progress-group">
+                                    <span class="similar-type" data-lang="InternetSimilarity"></span>
+                                    <span class="progress gray MR10">
+                                        <span class="progress-bar orange" style="width: 55%;"></span>
+                                    </span>
+                                    <span class="g-font-color orange percentage-span">55%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="MT20">
+                            <h4 class="g-font-color green" data-lang="SimilarityCalculationFormula"></h4>
+                            <p class="font-bold" data-lang="Formula"></p>
+                            <p>
+                                <span class="MR10" data-lang="SimilarityRange"></span>
+                                <span data-lang="SimilarityRangeDetail"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="MB15">
+            <div class="assessment-area">
+                <div class="clearfix">
+                    <h4 class="pull-left" data-lang="SimilarityDistribution"></h4>
+                    <div class="pull-right flex font-bold">
+                        <div class="distribution">
+                            <span class="distribution-map red"></span>
+                            <span>≥70%</span>
+                        </div>
+                        <div class="distribution">
+                            <span class="distribution-map yellow"></span>
+                            <span>40-70%</span>
+                        </div>
+                        <div class="distribution">
+                            <span class="distribution-map green"></span>
+                            <span><40%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="MB30" style="height:45px;background:gray;" id="barChart"></div>
+                <h4 data-lang="PointDistributionDiagram"></h4>
+                <div class="" style="height:370px;background:gray;" id="scatterChart"></div>
+            </div>
+        </div>
+        <div class="MB15">
+            <div class="assessment-area">
+                <h4 data-lang="LocalLibrariesTitle"></h4>
+                <div data-lang="LocalTip"></div>                <div class="ExpandCollapse text-center none MT15"><a href="#" class="g-font-color green" data-lang="ExpandAll"></a></div>
+            </div>
+        </div>
+        <div class="MB15">
+            <div class="assessment-area">
+                <h4 data-lang="InternetSimilarResources"></h4>
+                <ul class="source-list decimal PL30 Internet"><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">37.4%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 37.4%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://repositorio.ufpb.br/jspui/bitstream/123456789/16107/1/LLBSL23102019.pdf' target="_blank" rel="noopener noreferrer" class="g-font-color black">UFPB Centro de Ciências Sociais Aplicadas – CCSA Curso ...</a>
+                            </div>
+                            <a href='https://repositorio.ufpb.br/jspui/bitstream/123456789/16107/1/LLBSL23102019.pdf' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">5.1%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 5.1%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='http://www.fics.edu.br/index.php/augusto_guzzo/article/download/907/826/' target="_blank" rel="noopener noreferrer" class="g-font-color black">estudo sobre os motivos dos brasileiros não investirem com ...</a>
+                            </div>
+                            <a href='http://www.fics.edu.br/index.php/augusto_guzzo/article/download/907/826/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">3.0%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 3.0%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://economiaenegocios.com/definicao-de-fronteira-eficiente/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Definição de fronteira eficiente - Economia e Negocios -</a>
+                            </div>
+                            <a href='https://economiaenegocios.com/definicao-de-fronteira-eficiente/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">2.3%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 2.3%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://tedeantiga.pucsp.br/bitstream/handle/1357/1/Cesar Augusto Fregnani.pdf' target="_blank" rel="noopener noreferrer" class="g-font-color black">MESTRADO EM ADMINISTRAÇÃO - PUC-SP</a>
+                            </div>
+                            <a href='https://tedeantiga.pucsp.br/bitstream/handle/1357/1/Cesar Augusto Fregnani.pdf' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">2.1%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 2.1%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://pt.emmtrade.com/efficient/-Efficient-Frontier/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Fronteira eficiente - Emmtrade</a>
+                            </div>
+                            <a href='https://pt.emmtrade.com/efficient/-Efficient-Frontier/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">1.9%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 1.9%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='http://clubedefinancas.com.br/materias/fronteira-eficiente/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Fronteira Eficiente de Markowitz - Clube de Finanças</a>
+                            </div>
+                            <a href='http://clubedefinancas.com.br/materias/fronteira-eficiente/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">1.9%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 1.9%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://comoinvestir.thecap.com.br/fronteira-eficiente' target="_blank" rel="noopener noreferrer" class="g-font-color black">Fronteira Eficiente - The Capital Advisor - Notícias, Artigos e ...</a>
+                            </div>
+                            <a href='https://comoinvestir.thecap.com.br/fronteira-eficiente' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">1.4%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 1.4%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://tesseractholding.com/2021/04/13/tem-mais-brasileiros-na-cadeia-do-que-na-bolsa-por-que-tanta-aversao-ao-mercado-acionario/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Tem mais brasileiros na cadeia do que na bolsa - Tesseract ...</a>
+                            </div>
+                            <a href='https://tesseractholding.com/2021/04/13/tem-mais-brasileiros-na-cadeia-do-que-na-bolsa-por-que-tanta-aversao-ao-mercado-acionario/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">1.4%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 1.4%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://www.infomoney.com.br/colunistas/blog-da-redacao/tem-mais-brasileiros-na-cadeia-do-que-na-bolsa-por-que-tanta-aversao-ao-mercado-acionario/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Tem mais brasileiros na cadeia do que na bolsa - InfoMoney</a>
+                            </div>
+                            <a href='https://www.infomoney.com.br/colunistas/blog-da-redacao/tem-mais-brasileiros-na-cadeia-do-que-na-bolsa-por-que-tanta-aversao-ao-mercado-acionario/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">0.9%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 0.9%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://livecoins.com.br/bitcoin-reduzir-o-risco-da-sua-carteira/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Pode o Bitcoin Reduzir o Risco do seu Portfólio? - Livecoins</a>
+                            </div>
+                            <a href='https://livecoins.com.br/bitcoin-reduzir-o-risco-da-sua-carteira/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">0.9%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 0.9%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://www.passeidireto.com/arquivo/98118249/teoria-do-portfolio' target="_blank" rel="noopener noreferrer" class="g-font-color black">Teoria do Portfólio - Administracao de Carteiras - Passei Direto</a>
+                            </div>
+                            <a href='https://www.passeidireto.com/arquivo/98118249/teoria-do-portfolio' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">0.7%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 0.7%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://bravacapital.com/blog/a-fronteira-eficiente-ao-selecionar-seus-investimentos/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Por que é importante considerar a Fronteira Eficiente ao ...</a>
+                            </div>
+                            <a href='https://bravacapital.com/blog/a-fronteira-eficiente-ao-selecionar-seus-investimentos/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">0.6%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 0.6%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='https://blog.vortuna.com.br/gerenciamento-de-risco/teoria-de-markowitz/' target="_blank" rel="noopener noreferrer" class="g-font-color black">Teoria de Markowitz nos investimentos: entenda o que é</a>
+                            </div>
+                            <a href='https://blog.vortuna.com.br/gerenciamento-de-risco/teoria-de-markowitz/' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li><li>
+                        <div class="flex LH32">
+                            <div class="g-font-color green percent-span">0.5%</div>
+                            <div class="progress gray ML10 MR10">
+                                <span class="progress-bar green" style="width: 0.5%;"></span>
+                            </div>
+                            <div class="MR20">
+                                <span class="font-bold paperSource" data-lang="Source">Source</span> <span class="font-bold">:</span>
+                                <span><span data-lang="Internet">Internet</span></span>
+                            </div>
+                            <div class="MR5">
+                                <span class="font-bold" data-lang="Title">Title</span> <span class="font-bold">:</span>
+                                <a href='http://www.rodrigofernandez.com.br/ecomp/ref/ativos_lagrange.pdf' target="_blank" rel="noopener noreferrer" class="g-font-color black">comparação de carteiras na fronteira eficiente</a>
+                            </div>
+                            <a href='http://www.rodrigofernandez.com.br/ecomp/ref/ativos_lagrange.pdf' target="_blank" class="g-font-color black"><span class="icon iconfont icon-tiaozhuan"></span></a>
+                        </div>
+                    </li></ul>                <div class="ExpandCollapse text-center none MT15"><a href="#" class="g-font-color green" data-lang="ExpandAll"></a></div>
+            </div>
+        </div>
+        <div class="paper-footer">
+            <div class="assessment-area">
+                <div data-lang="PaperFooter"></div>
+                <div><span data-lang="Copyright"></span> © 2022 <a href="https://www.paperpass.net/" target="_blank">PaperPass.Net</a></div>
+            </div>
+        </div>
+    </div>
+    <span style="display: none;">This__is__the__place__to__load__the__download__file__code.__The__offline__version__is__hidden,__but__the__online__version__will__have__it.</span>
+</body>
+<script src="js/jquery.min.js"></script>
+<script src="js/lib.js"></script>
+<script src="js/detaildata.js"></script>
+<script src="js/language.js"></script>
+<script>
+    Report.report_id = '61e727d02f2d51e9c';
+</script>
+<script>
+    (function (System, $) {
+        $(function() {
+            $(document).on('click', '[eve-toggle=btn]', function(event) {
+                var $this = $(this);
+                System.Paper.toggle.call(this, function() {
+                    $this.find('[eve-toggle="text"]').text(multilingual[leng].PutAway);
+                    $this.addClass('active');
+                }, function() {
+                    $this.find('[eve-toggle="text"]').text(multilingual[leng].Details);
+                    $this.removeClass('active');
+                });
+            });
+
+            $(document).on('click', '[eve-toggle-btn=close]', function(event) {
+                var $this = $(this).closest('[eve-toggle=warp]').find('[eve-toggle=btn]');
+                System.Paper.toggle.call(this, function() {
+                    $this.addClass('active');
+                }, function() {
+                    $this.find('[eve-toggle="text"]').text(multilingual[leng].Details);
+                    $this.removeClass('active');
+                });
+            });
+
+            if ($(".second-level").find(".third-level").length != 0 && $(".third-level").nextAll().length == 0) {
+                $(".second-level .similar-progress-group:last-child").removeClass("end-node");
+                $(".third-level .similar-progress-group:last-child").addClass("end-node");
+            } else {
+                $(".second-level .similar-progress-group:last-child").addClass("end-node");
+                $(".third-level .similar-progress-group:last-child").removeClass("end-node");
+            }
+            System.operateState.saveId(Report.report_id);
+            parent.postMessage("get_language", "*");
+            var leng = System.operateState.getLanguage(Report.report_id);
+            if (leng != '') {
+                leng = typeof multilingual[leng] == "undefined" ? "English" : leng;
+            } else {
+                leng = typeof multilingual[user_language] == "undefined" ? "English" : user_language;;
+            }
+            window.userLeng = leng;
+            SwitchMultilingual(leng);
+            function SwitchMultilingual(leng) {
+                $('*[data-lang]').each(function () {
+                    var name = $(this).data().lang;
+                    $(this).html(multilingual[leng][name]);
+                });
+            }
+            window.addEventListener("message", function(event) {
+                if (event.data.leng) {
+                    leng = event.data.leng;
+                    SwitchMultilingual(leng);
+                    System.operateState.saveLanguage(Report.report_id, leng);
+                }
+            });
+        });
+    })(Report, jQuery);
+</script>
+<script src="js/echarts.min.js"></script>
+<script>
+    var barChart = echarts.init(document.getElementById('barChart'));
+    var barData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,68,0,0,61,0,0,0,0,0,64,93,98,100,64,0,78,0,85,0,72,70,88,74,97,0,99,0,0,96,99,66,0,0,0,0,0,0,0,0,0,52,0,0,0,0,0,62,77,100,100,0,92,93,70,0,0,0,0,0,100,80,64,0,0,0,0,0,0,0,0,0,0,0,98,100,98,96,96,98,98,0,100,100,100,100,0,98,100,0,98,97,79,0,99,0,98,100,0,99,99,97,0,0,0,100,98,84,52,80,99,0,0,0,51,0,92,100,0,100,98,0,0,0,0,0,0,0,0,85,99,100,76,100,0,0,0,0,0,0,57,0,0,71,69,100,100,88,0,0,0,100,0,0,0,0,0,0,0,61,94,98,92,0,0,75,61,0,0,69,0,0,0,64,77,0,0,0,0,0,72,93,83,0,0,0,0,0,0,0,70,0,98,93,98,99,97,98,0,0,86,93,0,51,66,0,0,0,0,0,0,0,0,78,0,0,0,73,100,100,85,100,100,99,90,98,100,82,100,99,99,0,100,100,96,98,95,66,60,0,74,0,0,0,96,0,0,0,0,0,0,0,100,99,99,100,100,0,100,100,0,100,98,0,93,0,100,71,0,0,84,69,0,100,79,93,100,98,100,0,0,0,0,96,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0];
+    var barXs = barData.map(function(item,i){
+        return i+1;
+    });
+    barData = barData.map(function (item,i) {
+        if (item < 40){
+            c = "#86c281";
+        }else if (item <70){
+            c = "#e4b55e";
+        }else{
+            c= "#f16d86"
+        }
+        return {value:1,itemStyle:{normal:{color:c,borderWidth:0},emphasis:{color:c}},silent:true,animation:false};
+    });
+    barOption = {
+
+        color: ['#3398DB'],
+        legend:{show:false},
+        silent : false,
+        animation:false,
+        grid: {
+            left:0,
+            right:10,
+            containLabel: false
+        },
+        tooltip:{
+            show:false
+        },
+        axisPointer:{show:false},
+        xAxis : [
+            {
+                type : 'category',
+                data : barXs,
+
+                axisLine:{show:false},
+                splitLine:{show:false}
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value',
+                show : false
+            }
+        ],
+        series : [
+            {
+                name:'',
+                type:'bar',
+
+                data:barData,
+                legendHoverLink:false,
+                barGap:0,
+                barCategoryGap:0
+            }
+        ]
+    };
+
+    barChart.setOption(barOption);
+</script>
+<script>
+    $(function () {
+        var scatterChart = echarts.init(document.getElementById('scatterChart'));
+        var scatterData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,68,0,0,61,0,0,0,0,0,64,93,98,100,64,0,78,0,85,0,72,70,88,74,97,0,99,0,0,96,99,66,0,0,0,0,0,0,0,0,0,52,0,0,0,0,0,62,77,100,100,0,92,93,70,0,0,0,0,0,100,80,64,0,0,0,0,0,0,0,0,0,0,0,98,100,98,96,96,98,98,0,100,100,100,100,0,98,100,0,98,97,79,0,99,0,98,100,0,99,99,97,0,0,0,100,98,84,52,80,99,0,0,0,51,0,92,100,0,100,98,0,0,0,0,0,0,0,0,85,99,100,76,100,0,0,0,0,0,0,57,0,0,71,69,100,100,88,0,0,0,100,0,0,0,0,0,0,0,61,94,98,92,0,0,75,61,0,0,69,0,0,0,64,77,0,0,0,0,0,72,93,83,0,0,0,0,0,0,0,70,0,98,93,98,99,97,98,0,0,86,93,0,51,66,0,0,0,0,0,0,0,0,78,0,0,0,73,100,100,85,100,100,99,90,98,100,82,100,99,99,0,100,100,96,98,95,66,60,0,74,0,0,0,96,0,0,0,0,0,0,0,100,99,99,100,100,0,100,100,0,100,98,0,93,0,100,71,0,0,84,69,0,100,79,93,100,98,100,0,0,0,0,96,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0];
+        var scatterXs = scatterData.map(function(item,i){
+            return i+1;
+        });
+        scatterData = scatterData.map(function (item,i) {
+            c= "#e4b55e";
+            if (item>=70){
+                c="#f16d86";
+            }
+
+            return {value:item,symbolSize:4,itemStyle:{normal:{color:c,opacity:1},emphasis:{color:c}},silent:true,animation:false};
+        });
+
+
+        var scatterOption = {
+            color: ['#3398DB'],
+            legend:{show:false},
+            silent : false,
+            animation:false,
+            grid: {
+
+                right:10,
+                y:10,
+                x:40,
+                show:true,
+                backgroundColor:"#f6f6f6",
+                containLabel: false
+            },
+            tooltip:{
+                show:false
+            },
+            axisPointer:{show:false},
+            xAxis : [
+                {
+                    type : 'category',
+                    data : scatterXs,
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    name:'X-' + multilingual[window.userLeng].Sentence,
+                    nameLocation:'middle',
+                    nameGap:25
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    show : true,
+                    min:35,
+                    max:100,
+                    name:'Y-' + multilingual[window.userLeng].Similarity + '%',
+                    nameLocation:'middle',
+                    nameGap:25
+                }
+            ],
+            series : [
+                {
+
+                    type:'scatter',
+                    symbol:"circle",
+                    data:scatterData,
+                    legendHoverLink:false,
+                    // symbolSize:1130/369
+                }
+            ]
+        };
+
+        scatterChart.setOption(scatterOption);
+
+        $(window).resize(function () {
+            barChart.resize();
+            scatterChart.resize();
+        });
+    })
+</script>
+</html>

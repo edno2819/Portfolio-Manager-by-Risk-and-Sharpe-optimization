@@ -1,4 +1,4 @@
-from utils.setPortfolio2 import *
+from utils.setPortfolio import *
 import plotly.graph_objects as go
 from utils.variaveis import CHART_THEME
 
@@ -13,6 +13,8 @@ class SetPara:
 
     def refresh(self, assets, interval, start, end, atualization, dates_to_calculate, tipo):
         GrapPor, risco, retur, sharpe, dataset = createPortfolio(assets, interval, start, end, atualization, dates_to_calculate, tipo)
+        self.param = {'tick':interval, 'start':start, 'end':end, 'otimization':tipo, 'atualization':atualization, 'dates_to_calculate':dates_to_calculate}
+
         if GrapPor!=False:
             self.GrapPor = GrapPor
             self.risco = risco
@@ -35,10 +37,10 @@ class SetPara:
             return self.returnAvoid()
         return self.GrapPor.graphAssets()
 
-    def indicatorPeriod(self):
+    def indicatorPeriod(self, value=[1,1,1,1]):
         if type(self.GrapPor)==list:
             return self.returnAvoid()
-        return self.GrapPor.indicatorPeriod()
+        return self.GrapPor.indicatorPeriod(value)
 
     def returnPeriod(self):
         if type(self.GrapPor)==list:
@@ -60,7 +62,3 @@ class SetPara:
 
 Figs = SetPara()
 
-#OBSERVAÇÕES
-# Botar uma seta pra atualizar as configurações do portifólio no gráfico de pizza
-# avisar qual ativo ta dando erro
-# Fazer um comparativo da queda dos portifólios nos anos de 2008 e 2020

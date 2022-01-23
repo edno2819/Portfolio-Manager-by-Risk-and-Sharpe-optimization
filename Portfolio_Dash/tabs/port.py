@@ -8,6 +8,13 @@ import dash
 
 dados_port = [
     html.Button('Atualizar', id='Atualizar', n_clicks=0),
+
+    html.Hr(),
+    dbc.Row(html.Div([
+        html.H5(children='Parâmetros', style={'text-align': 'center', 'color': 'red'}),
+        html.P('',  id='parametros', style={'text-align': 'center', 'color': 'white', 'fontSize':19})], className='Divhead')),
+    html.Hr(),
+
     dbc.Col(html.Div([
         html.H5(children='Risco do portifólio', style={'text-align': 'center', 'color': 'red'}),
         html.P(Figs.risco, style={'text-align': 'center', 'color': 'red', 'fontSize':40}, id='risco')
@@ -48,7 +55,7 @@ child = dbc.Container(
             width={'size': 2, 'offset': 0, 'order': 2}),
 
             dbc.Col([
-            html.H5('S&P500', className='text-center'),
+            html.H5('Portfolio Bruto', className='text-center'),
             dcc.Graph(id='indicatorPeriod2',
                       figure=Figs.indicatorPeriod(),
                       style={'height':550}),
@@ -82,7 +89,7 @@ child = dbc.Container(
                 step=1,
                 value=0,
                 tooltip={"placement": "bottom", "always_visible": True},
-                id='slider-port'
+                id='slider-port',
             )]),
 
         dbc.Row([
@@ -90,17 +97,17 @@ child = dbc.Container(
                 html.H5('Frações dos Ativos', className='text-center'),
                 dcc.Graph(id='circle_chart_portifolio',
                       figure =Figs.figPie(),
-                      style={'height':400}),
+                      style={'height':450}),
 
-            ],width={'size': 6, 'offset': 0, 'order': 2}),
+            ],width={'size': 5, 'offset': 0, 'order': 2}),
 
             dbc.Col([
                 html.H5('Fronteira Eficiente', className='text-center'),
                 dcc.Graph(id='fronteiraEficiente',
                         figure=Figs.fronteiraEficiente(),
-                        style={'height':400}),
+                        style={'height':450}),
             ],
-            width={'size': 6, 'offset': 0, 'order': 2}),
+            width={'size': 7, 'offset': 0, 'order': 2}),
         ])
         
     ], 
@@ -122,6 +129,8 @@ layout_port = [dbc.Row(dados_port, className="mb-3"), dbc.Row(child)]
     Output("graphAssets", "figure"),
     Output("fronteiraEficiente", "figure"),
     Output("slider-port", "max"),
+    Output("slider-port", "marks"),
+    Output("parametros", "children"),
     Input("Atualizar", "n_clicks"),
     Input("slider-port", "value"),
 
@@ -134,19 +143,22 @@ def update_graph_temas(n_clicks, value):
         retur = Figs.retur
         sharpe = Figs.sharpe
         fig_1 = Figs.returnPortfolio()
-        fig_2 = Figs.indicatorPeriod()
-        fig_3 = Figs.indicatorPeriod()
+        fig_2 = Figs.indicatorPeriod(Figs.GrapPor.port_main_return)
+        fig_3 = Figs.indicatorPeriod(Figs.GrapPor.port_comp_return)
         fig_4 = Figs.returnPeriod()
         fig_5 = Figs.figPie()
         fig_6 = Figs.graphAssets()
         fig_7 = Figs.fronteiraEficiente()   
+        size = len(Figs.GrapPor.port)
+        dic_size =  {i: '{}'.format(i) for i in range(0, size-1)}
+        para_str = f'''Tick: {Figs.param['tick']}  |  Cálculo: {Figs.param['dates_to_calculate']}  |  Atualização: {Figs.param['atualization']}  | 
+         Otimização: {Figs.param['otimization']}  |  Inicio: {Figs.param['start']}  |  Final: {Figs.param['end']}'''
 
-        return risco, retur, sharpe, fig_1, fig_2, fig_3, fig_4, fig_5, fig_6, fig_7, len(Figs.GrapPor.port)
+        return risco, retur, sharpe, fig_1, fig_2, fig_3, fig_4, fig_5, fig_6, fig_7, size, dic_size, para_str
     else:
         fig_6 = Figs.figPie(value)
         fig_7 = Figs.fronteiraEficiente(value)  
-        return no, no, no, no, no, no, no, fig_6, no, fig_7, no
-    #return dash.no_update
+        return no, no, no, no, no, no, no, fig_6, no, fig_7, no, no, no
 
 
 

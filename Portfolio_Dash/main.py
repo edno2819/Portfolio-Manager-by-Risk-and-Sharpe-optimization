@@ -3,12 +3,8 @@ from dash.dependencies import Input, Output
 from dash import html
 from app import app
 import dash_core_components as dcc
-
-import utils.variaveis as var
-
 from tabs.port import layout_port
 from tabs.selecao import SelectionPortfolio
-#from tabs.msg_table import datatable_layout
 
 
 server = app.server
@@ -20,7 +16,6 @@ app_tabs = html.Div(
             [
                 dcc.Tab(label="Portfólio Seleção", value="SelectionPortfolio"),
                 dcc.Tab(label="Portfólio Análise", value="layout_port"),
-                #dcc.Tab(label="Dados dos Ativos", value="datatable_layout"),
             ],
             id="tabs",
             className='custom-tabs-container',

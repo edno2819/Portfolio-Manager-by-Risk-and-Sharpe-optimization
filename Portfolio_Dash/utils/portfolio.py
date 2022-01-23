@@ -124,4 +124,7 @@ class Portifolio:
             self.calculate_return()
             result += self.sharpe_ratio(porcent)
         return result
-    
+
+
+class PortAjust(Portifolio):
+    pass

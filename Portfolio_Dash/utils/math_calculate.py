@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def covariancia(closes_1, closes_2):
     c = 0
     n = len(closes_1)
@@ -27,7 +30,6 @@ def media_retorno(closes:list):
 def retorno(close_now:float, close_before:float):
     return (close_now - close_before)/close_before
 
-
 def variancia_porcent(closes):
     v = 0
     mean = media_retorno(closes)
@@ -53,3 +55,21 @@ def datas_to_porcent_init(closes:list):
     for n in range(1, len(closes)):
         new_list.append(porcent_dif(closes[0], closes[n]))
     return new_list
+
+def drawdown_function(return_series: pd.Series):    
+    wealth_index = 1*(1+return_series).cumprod()
+
+    pico = wealth_index.cummax()
+
+    drawdowns = (wealth_index - pico)/pico
+
+    pd.DataFrame({'Wealth': wealth_index, 'Pico': pico,'Drawdowns': drawdowns})
+    return drawdowns.min() * -100
+
+def max_drawdowm(serie):
+    data = {c:serie[c] for c in range(len(serie))}
+    data = pd.DataFrame(data.items(), columns=['Date', 'Adj Close'])
+    data.dropna()
+    data['ret'] = data['Adj Close'].pct_change()
+
+    return drawdown_function(data['ret'])

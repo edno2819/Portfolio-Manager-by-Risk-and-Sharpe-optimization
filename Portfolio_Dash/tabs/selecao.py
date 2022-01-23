@@ -26,7 +26,7 @@ image_card = dbc.Card(
                     min_date_allowed= date(2005, 1, 1),
                     max_date_allowed= date(2021, 4, 1),
                     initial_visible_month= date(2010, 1, 1),
-                    start_date= date(2010, 1, 1),
+                    start_date= date(2013, 5, 1),
                     end_date= date(2021, 4, 1),
                 ),
 
@@ -42,11 +42,11 @@ image_card = dbc.Card(
                 dbc.Row([
                     dbc.Col([
                         html.H6("Intervalo de Atualização:", className="card-text"),
-                        dcc.Input(id="atualization", type="number", placeholder="input with range",min=1, max=1000, step=3, value=6)
+                        dcc.Input(id="atualization", type="number", placeholder="input with range",min=1, max=1000, step=1, value=6)
                         ]),
                     dbc.Col([
                         html.H6("Intervalo dos Cálculos:", className="card-text"),
-                        dcc.Input(id="dates_to_calculate", type="number", placeholder="input with range",min=5, max=500, step=3, value=52)
+                        dcc.Input(id="dates_to_calculate", type="number", placeholder="input with range",min=5, max=500, step=1, value=52)
                         ])
                     ], justify="around"),
 
@@ -54,7 +54,7 @@ image_card = dbc.Card(
                 html.Hr(),
                 html.H6(" Ações:", className="card-text"),
                 dcc.Dropdown(id='assets', 
-                        options=[{'label':key, 'value':key} for key in var.ASSETS.keys()],
+                        options=[{'label':key, 'value':var.ASSETS[key]} for key in var.ASSETS.keys()],
                         multi=True, style={"color": "#000000"},
                         placeholder="Selecione as Ações",),
 
@@ -97,7 +97,13 @@ def switch_tab(n_clicks, a, b, c, d, e, f, g):
         start = a[:10]
         end = b
         interval=c
-        assets = ' '.join(f)
+        assets = ''
+        for key in var.PORTS_MAKED.keys():
+            if key in f:
+                assets += ' '.join(var.PORTS_MAKED[key])+' '
+                f.pop(f.index(key))
+        
+        assets += ' '.join(f)
         atualization = d
         dates_to_calculate = e
         tipo = g

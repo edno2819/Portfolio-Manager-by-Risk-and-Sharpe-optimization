@@ -4,89 +4,211 @@ from utils.portfolio import *
 import numpy  as np
 from utils.graphPortfolio import GraphPort
 from utils.variaveis import *
+import pandas as pd
 
 
-def set_assets_portfolio(port, assets, start, end, interval):
-    data = yf.download(assets, start=start, end=end, interval=interval)
-    CLOSES = data['Adj Close']
+def setDataClose(assets, start, end, interval):
+    dataset = yf.download(assets, start=start, end=end, interval=interval)
+    names_to_drop = []
+    #VERIFICANDO ATIVOS SEM VALORES
+    num_nan = dataset['Adj Close'].isna().sum()
+    for ativo in num_nan.keys():
+        if num_nan[ativo]>min(num_nan):
+            names_to_drop.append(ativo)
+            print(f'Erro no ativo {ativo}')
+
+    #DELETANDO LINHAS VAZIAS
+    CLOSES = dataset['Adj Close'].drop(columns=names_to_drop)
+    CLOSES = CLOSES.dropna()
+
+    return dataset , CLOSES
+
+
+def createSetPortfolio(assets, start, end, interval, atualization, dates_to_calculate):
+    ports = []
+    _ , CLOSES = setDataClose(assets, start, end, interval)
+
+    
+    for c in range(dates_to_calculate, len(list(CLOSES.index)), atualization):
+        ports.append(Portifolio())
+        port = ports[-1] 
+
+        assets_name = list(CLOSES.columns)
+        port.dates =  list(CLOSES.index)[c:c+atualization+1]
+
+        for asset in assets_name:
+            data =  np.array(list(CLOSES[asset].array))[c:c+atualization+1]
+            data = data[np.logical_not(np.isnan(data))]
+            if len(data)>0:
+                dates = list(CLOSES[asset].dropna().index)[c:c+atualization+1]
+                port.add_asset(asset, data)
+                port.assets_dates[asset] = dates
+
+    return ports
+
+
+def createSetPortfolioToMinimize(assets, start, end, interval, atualization, dates_to_calculate):
+    ports = []
+    dataset , CLOSES = setDataClose(assets, start, end, interval)
+    
+    for c in range(dates_to_calculate, len(list(CLOSES.index)), atualization):
+        ports.append(Portifolio())
+        port = ports[-1] 
+
+        assets_name = list(CLOSES.columns)
+        port.dates =  list(CLOSES.index)[c-dates_to_calculate:c]
+
+        for asset in assets_name:
+            data =  np.array(list(CLOSES[asset].array))[c-dates_to_calculate:c]
+            data = data[np.logical_not(np.isnan(data))]
+            if len(data)>0:
+                dates = list(CLOSES[asset].dropna().index)[c-dates_to_calculate:c]
+                port.add_asset(asset, data)
+                port.assets_dates[asset] = dates
+
+    return ports
+
+
+def set_assets_portfolio(port, assets, start, end, interval, dates_to_calculate):
+    dataset , CLOSES = setDataClose(assets, start, end, interval)
+
     port.dates =  list(CLOSES.dropna().index)
     assets_name = list(CLOSES.columns)
     
-
-
     for asset in assets_name:
         data =  np.array(list(CLOSES[asset].array))
-        data = data[np.logical_not(np.isnan(data))]
+        data = data[np.logical_not(np.isnan(data))][dates_to_calculate:]
         if len(data)>0:
             port.add_asset(asset, data)
-            port.assets_dates[asset] = list(CLOSES[asset].dropna().index)
+            port.assets_dates[asset] = list(CLOSES[asset].dropna().index)[dates_to_calculate:]
 
     port.set_max_datas()
     port.set_to_calculate_risk()
     port.calculate_return()
+    return dataset
 
 
-def set_assets_portfolio_unique(port, asset, start, end, interval):
+def set_assets_portfolio_unique(port, asset, start, end, interval, dates_to_calculate):
     data = yf.download(asset, start=start, end=end, interval=interval)
     CLOSES = data['Adj Close']
-    port.dates =  list(CLOSES.dropna().index)
+    CLOSES = CLOSES.dropna()
+
+    port.dates =  list(CLOSES.index)
     
     data =  np.array(list(CLOSES.array))
-    data = data[np.logical_not(np.isnan(data))]
+    data = data[np.logical_not(np.isnan(data))][dates_to_calculate:]
     if len(data)>0:
         port.add_asset(asset, data)
-        port.assets_dates[asset] = list(CLOSES.dropna().index)
+        port.assets_dates[asset] = list(CLOSES.index)[dates_to_calculate:]
 
     port.set_max_datas()
-    #port.set_to_calculate_risk()
-    #port.calculate_return()
 
 
-def minimize_portfolio(port):
+
+def setPortfolio(ports, interval):
+    for port in ports:
+        port.set_max_datas()
+        try:
+            port.set_to_calculate_risk()
+        except:
+            tes = 1
+            port.set_to_calculate_risk()
+        port.calculate_return()
+        port.set_max_datas()
+        port.interval = interval
+
+    return ports
+
+
+def minimize_portfolio(port, function):
     assets_name = list(port.port.keys())
     limites = tuple([(0, 1) for c in range(len(assets_name))])
     x0 = [1/len(assets_name) for c in range(len(assets_name))]
-
     cons = ({'type': 'eq', 'fun': lambda x:  np.sum(x) - 1})
-    result = minimize(port.sharpe_ratio_invert, x0, method='SLSQP', bounds=limites, constraints=cons)
 
-    if result.success:
-        fitted_params = result.x
-        risco = round(port.risk_portfolio(fitted_params),3)
-        retorno = round(port.return_portfolio(fitted_params),3)
-        sharpe_ratio = round(port.sharpe_ratio(fitted_params),3)
-    else:
-        raise ValueError(result.message)
-
-    return {asse:round(taxa*100,2) for asse, taxa  in zip(assets_name,fitted_params)}, fitted_params, risco, retorno, sharpe_ratio
+    result = minimize(function, x0, method='SLSQP', bounds=limites, constraints=cons)
 
 
-def createPortfolio(assets, interval, start, end):
-    port = Portifolio()
-    assets_name = set_assets_portfolio(port, assets, start, end, INTERVAL[interval])
-    port.portifolio_set(interval)
-    fitted_params, taxas_assets, risco, retorno, sharpe_ratio = minimize_portfolio(port)
-    GrapPor = GraphPort(port, taxas_assets, fitted_params)
+    return result.x
 
-    end_new = "2021-05-30"
-    interval_new = '1 Semana'
+
+def minimize_ports(ports, tipo):
+    vetor_pesos = []
+    for port in ports:
+
+        if tipo=='sharpe':
+            function = port.sharpe_ratio_invert
+        elif tipo=='retorno':
+            function = port.return_portfolio_invert
+        elif tipo=='risco':
+            function = port.risk_portfolio
+
+        vetor_pesos.append(minimize_portfolio(port, function))
+    return vetor_pesos
+
+
+def calculateRiscoMedio(ports, pesos):
+    risco, returno, sharpe = 0, 0, 0
+    n = len(pesos)
+    for port, peso in zip(ports, pesos):
+        if type(port.risk_portfolio(peso))!=float:
+            risco = 1
+        risco += port.risk_portfolio(peso)
+        returno += port.return_portfolio(peso)
+        sharpe += port.sharpe_ratio(peso)
+
+    return round(risco/n,3), round(returno/n,3), round(sharpe/n,3) 
+
+
+
+def createPortfolio(assets, interval, start, end, atualization, dates_to_calculate, tipo):
+    ports_to_mini = createSetPortfolioToMinimize(assets, start, end, INTERVAL[interval], atualization, dates_to_calculate)
+
+    if ports_to_mini==[]:
+        return False, False, False, False, False
+    
+    ports = createSetPortfolio(assets, start, end, INTERVAL[interval], atualization, dates_to_calculate)
+
+    if ports_to_mini[-1].assets_cov=={}:
+        del ports_to_mini[-1]
+        del ports[-1]
+
+    ports_to_mini = setPortfolio(ports_to_mini, interval)
+    vetor_pesos = minimize_ports(ports_to_mini, tipo)
+    #vetor_pesos = []
+    # for c in range(len(ports_to_mini)):
+    #     vetor_pesos.append([round(1/len(ports_to_mini[0].port.keys()),4) for c in ports_to_mini[0].port.keys()])
+
+
+    ports = setPortfolio(ports, interval)
+
+    risco, retur, sharpe = calculateRiscoMedio(ports_to_mini, vetor_pesos)
+
+    comps, comps_taxa = {}, {}
+
+    #PORTFOLIO BRUTO
     port_2 = Portifolio()
-    set_assets_portfolio(port_2, assets, end, end_new, INTERVAL[interval_new])
-    port_2.portifolio_set(interval_new)
+    dataset = set_assets_portfolio(port_2, assets, start, end, INTERVAL[interval], dates_to_calculate)
+    port_2.set_max_datas()
+    comps['Portfolio Bruto'] = port_2
+    comps_taxa['Portfolio Bruto TAXA'] = [round(1/len(vetor_pesos[0]),3) for c in vetor_pesos[0]]
 
     #COMPARATIVO
     port_sp500 = Portifolio()
-    set_assets_portfolio_unique(port_sp500, ATIVOS['S&P 500'], end, end_new, INTERVAL[interval_new])
-    port_sp500.portifolio_set(interval_new)
+    set_assets_portfolio_unique(port_sp500, ATIVOS['S&P 500'], start, end, INTERVAL[interval], dates_to_calculate)
+    port_sp500.set_max_datas() 
+    comps['S&P 500'] = port_sp500
+    comps_taxa['S&P 500 TAXA'] = [1]
 
     #COMPARATIVO2
     port_ibovespa = Portifolio()
-    set_assets_portfolio_unique(port_ibovespa, ATIVOS['IBOVESPA'], end, end_new, INTERVAL[interval_new])
-    port_ibovespa.portifolio_set(interval_new)
+    set_assets_portfolio_unique(port_ibovespa, ATIVOS['IBOVESPA'], start, end, INTERVAL[interval], dates_to_calculate)
+    port_ibovespa.set_max_datas() 
+    comps['IBOVESPA'] = port_ibovespa
+    comps_taxa['IBOVESPA TAXA'] = [1]
 
-    comps = {'S&P 500':port_sp500, 'IBOVESPA':port_ibovespa, 'Portfolio Bruto':port_2}
-    comps_taxa = {'S&P 500 TAXA':[1], 'IBOVESPA TAXA':[1], 'Portfolio Bruto TAXA':[round(1/len(taxas_assets),3) for c in taxas_assets]}
+    #INSTANCIANDO A CLASSE DOS GRÁFICOS
+    GrapPor = GraphPort(ports, vetor_pesos, comps, comps_taxa)
+    GrapPor.ports_to_mini = ports_to_mini
 
-    GrapPor_extra = GraphPort(port_2, taxas_assets, fitted_params, comps, comps_taxa)
-
-    return GrapPor, GrapPor_extra, risco, retorno, sharpe_ratio
+    return GrapPor, risco, retur, sharpe, dataset
