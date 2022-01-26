@@ -15,6 +15,7 @@ class GraphPort:
         self.taxas_assets = taxas_assets
         self.port_comp = port_comp
         self.port_comp_taxa = port_comp_taxa
+        self.values_growth = {}
     
 
     def graphAssets(self):
@@ -23,16 +24,10 @@ class GraphPort:
         port = self.port_comp['Portfolio Bruto']
 
         for asset in port.port.keys():   
+            name = list(ASSETS.keys())[list(ASSETS.values()).index(asset)] if asset in list(ASSETS.values()) else asset
             fig.add_trace(go.Scatter(x=port.assets_dates[asset], y=port.port[asset],
-                                mode="lines",  # you can also use "lines+markers", or just "markers"
-                                name=asset))
-
-            annotations.append(dict(xref='paper', x=1.01, y=port.port[asset][-1],
-                            xanchor='left', yanchor='middle',
-                            text=f'{round(port.port[asset][-1],2)*100}%',
-                            font=dict(family='Arial',
-                                        size=16),
-                            showarrow=False))
+                                mode="lines",  
+                                name=name))
 
 
         annotations.append(dict(xref='paper', yref='paper', x=0.5, y=-0.1,
@@ -71,8 +66,8 @@ class GraphPort:
         for asset in taxas_dict.keys():
             if taxas_dict[asset]>0.01:
                 lis.append(taxas_dict[asset])
-                #name_lis.append(asset)
-                name_lis.append(list(ASSETS.keys())[list(ASSETS.values()).index(asset)])
+                name = list(ASSETS.keys())[list(ASSETS.values()).index(asset)] if asset in list(ASSETS.values()) else asset
+                name_lis.append(name)
         
         date_start = self.port[n].dates[0].__str__()[:10]
         date_end = self.port[n].dates[-1].__str__()[:10]
@@ -89,23 +84,10 @@ class GraphPort:
         return fig
 
 
-    def indicatorPeriod(self, values):
+    def indicatorPeriod(self, main, comp):
         fig = go.Figure()
         fig.layout.template = self.CHART_THEME
-
-        fig.add_trace(go.Indicator(
-            mode = "number",
-            value = round(variance(values),3),
-            number = {'suffix': ""},
-            title = {"text": "<br><span style='font-size:0.9em;color:gray'>Variância</span>"},
-            domain = {'row': 0, 'column': 0}))
-
-        fig.add_trace(go.Indicator(
-            mode = "number",
-            value = round(stdev(values),3),
-            number = {'suffix': ""},
-            title = {"text": "<span style='font-size:0.9em;color:gray'>Desvio Padrão</span>"},
-            domain = {'row': 1, 'column': 0}))
+        values = self.values_growth[main]
 
         fig.add_trace(go.Indicator(
             mode = "delta",
@@ -113,19 +95,58 @@ class GraphPort:
             number = {'suffix': " %"},
             title = {"text": "<span style='font-size:0.9em;color:gray'>Crescimento</span>"},
             delta = {'position': "bottom", 'reference': 1, 'relative': True, "valueformat": ".1%"},
-            domain = {'row': 2, 'column': 0}))
+            domain = {'row': 0, 'column': 0}))
+
+        fig.add_trace(go.Indicator(
+            mode = "number",
+            value = round(sdp(values),3),#round(stdev(values),3)
+            number = {'suffix': ""},
+            title = {"text": "<span style='font-size:0.9em;color:gray'>Desvio Padrão Neg</span>"},
+            domain = {'row': 1, 'column': 0}))
 
         fig.add_trace(go.Indicator(
             mode = "delta",
             value = max_drawdowm(values)*-0.01,
-            title = {"text": "<span style='font-size:0.9em;color:gray'>Drawdowm</span>"},
+            title = {"text": "<span style='font-size:0.9em;color:gray'>Drawdown</span>"},
+            delta = {'position': "bottom", 'reference': 0, 'relative': False, "valueformat": ".1%"},
+            domain = {'row': 2, 'column': 0}))
+
+
+        a, b = superi(values, self.values_growth[comp])
+        fig.add_trace(go.Indicator(
+            mode = "delta",
+            value = a/100,
+            title = {"text": f"<span style='font-size:0.9em;color:gray'>VS {comp}</span>"},
             delta = {'position': "bottom", 'reference': 0, 'relative': False, "valueformat": ".1%"},
             domain = {'row': 3, 'column': 0}))
 
+        fig.add_trace(go.Indicator(
+            mode = "delta",
+            value = b,
+            title = {"text": "<span style='font-size:0.9em;color:gray'>% ACIMA</span>"},
+            delta = {'position': "bottom", 'reference': 0, 'relative': False, "valueformat": ".1%"},
+            domain = {'row': 4, 'column': 0}))
+
+        a, b = superi(values, self.values_growth['IBOVESPA'])
+        fig.add_trace(go.Indicator(
+            mode = "delta",
+            value = a/100,
+            title = {"text": "<span style='font-size:0.9em;color:gray'>VS IBOVESPA</span>"},
+            delta = {'position': "bottom", 'reference': 0, 'relative': False, "valueformat": ".1%"},
+            domain = {'row': 5, 'column': 0}))
+
+        fig.add_trace(go.Indicator(
+            mode = "delta",
+            value = b,
+            title = {"text": "<span style='font-size:0.9em;color:gray'>% ACIMA</span>"},
+            delta = {'position': "bottom", 'reference': 0, 'relative': False, "valueformat": ".1%"},
+            domain = {'row': 6, 'column': 0}))
+
         fig.update_layout(
-            grid = {'rows': 4, 'columns': 1, 'pattern': "independent"},
+            grid = {'rows': 7, 'columns': 1, 'pattern': "independent"},
             margin=dict(l=50, r=50, t=30, b=30)
         )
+        
         return fig
     
 
@@ -155,7 +176,7 @@ class GraphPort:
         data = [go.Bar(name='Portfolio', x=dates, y=values)]
 
         for comp in self.port_comp.keys():
-            values_comp = calculate_return_portfolio(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp])  
+            values_comp = calculate_return_portfolio(self.port_comp_taxa[comp+' TAXA'], self.port_comp[comp]) 
             data.append(go.Bar(name=comp, x=dates, y=values_comp))
 
         fig = go.Figure(data=data, layout=go.Layout(title=go.layout.Title(text=f'Retorno {self.port[-1].interval}(%)')))
@@ -210,30 +231,15 @@ class GraphPort:
         # self.port[1].port_porcent_init['ABEV3.SA']
             
         values = values[1:]
-        self.port_main_return = values
+        self.values_growth['Portfolio'] = values
         fig = go.Figure() 
         fig.add_trace(go.Scatter(x=dates, y=values, mode="lines", name='Portfolio'))
         
 
-        # annotations.append(dict(xref='paper', x=1.01, y=values[-1],
-        #                     xanchor='left', yanchor='middle',
-        #                     text=f'{round(values[-1]*100,1)}%',
-        #                     font=dict(family='Arial',
-        #                                 size=16),
-        #                     showarrow=False))
-
-
         for comp in self.port_comp.keys():
             values_comp = calculate_return_portfolio_unique(self.port_comp_taxa[comp+' TAXA'][:len(dates)], self.port_comp[comp])  
             fig.add_trace(go.Scatter(x=dates, y=values_comp, mode="lines",  name=comp))
-            if comp=='Portfolio Bruto':
-                self.port_comp_return = values_comp
-            # annotations.append(dict(xref='paper', x=1.01, y=values_comp[-1],
-            #                             xanchor='left', yanchor='middle',
-            #                             text=f'{round(values_comp[-1]*100,1)}%',
-            #                             font=dict(family='Arial',
-            #                                         size=16),
-            #                             showarrow=False))
+            self.values_growth[comp] = values_comp
 
         fig.layout.template = self.CHART_THEME
         # Source

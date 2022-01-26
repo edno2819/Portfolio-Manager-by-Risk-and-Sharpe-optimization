@@ -1,10 +1,21 @@
 from scipy.optimize import minimize
 import yfinance as yf
 from utils.portfolio import *
+from utils.utilitarios import *
 import numpy  as np
 from utils.graphPortfolio import GraphPort
 from utils.variaveis import *
 import pandas as pd
+import pickle
+
+def carregar_dados(name):
+    with open(f'dados_assets/{name}.obj', 'rb') as inp:
+        tech_companies = pickle.load(inp)
+        return  tech_companies
+
+
+def salvar(obj, name):
+    save_object(obj, f'dados_assets/{name}.obj')
 
 
 def setDataClose(assets, start, end, interval):
@@ -104,6 +115,20 @@ def set_assets_portfolio_unique(port, asset, start, end, interval, dates_to_calc
     port.set_max_datas()
 
 
+def set_assets_portfolio_carregados(port, asset, start, end, interval, dates_to_calculate):
+    df = carregar_dados(asset+interval)
+    CLOSES = df[(df.index >= start) & (df.index <= end)]
+
+    port.dates =  list(CLOSES.index)
+    
+    data =  np.array(list(CLOSES.array))
+    data = data[np.logical_not(np.isnan(data))][dates_to_calculate:]
+    if len(data)>0:
+        port.add_asset(asset, data)
+        port.assets_dates[asset] = list(CLOSES.index)[dates_to_calculate:]
+
+    port.set_max_datas()
+
 
 def setPortfolio(ports, interval):
     for port in ports:
@@ -193,16 +218,16 @@ def createPortfolio(assets, interval, start, end, atualization, dates_to_calcula
     comps['Portfolio Bruto'] = port_2
     comps_taxa['Portfolio Bruto TAXA'] = [round(1/len(vetor_pesos[0]),3) for c in vetor_pesos[0]]
 
-    #COMPARATIVO
-    port_sp500 = Portifolio()
-    set_assets_portfolio_unique(port_sp500, ATIVOS['S&P 500'], start, end, INTERVAL[interval], dates_to_calculate)
-    port_sp500.set_max_datas() 
-    comps['S&P 500'] = port_sp500
-    comps_taxa['S&P 500 TAXA'] = [1]
+    # #COMPARATIVO
+    # port_sp500 = Portifolio()
+    # set_assets_portfolio_carregados(port_sp500, ATIVOS['S&P 500'], start, end, INTERVAL[interval], dates_to_calculate)
+    # port_sp500.set_max_datas() 
+    # comps['S&P 500'] = port_sp500
+    # comps_taxa['S&P 500 TAXA'] = [1]
 
     #COMPARATIVO2
     port_ibovespa = Portifolio()
-    set_assets_portfolio_unique(port_ibovespa, ATIVOS['IBOVESPA'], start, end, INTERVAL[interval], dates_to_calculate)
+    set_assets_portfolio_carregados(port_ibovespa, ATIVOS['IBOVESPA'], start, end, INTERVAL[interval], dates_to_calculate)
     port_ibovespa.set_max_datas() 
     comps['IBOVESPA'] = port_ibovespa
     comps_taxa['IBOVESPA TAXA'] = [1]

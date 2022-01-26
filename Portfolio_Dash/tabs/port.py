@@ -55,12 +55,28 @@ child = dbc.Container(
             width={'size': 2, 'offset': 0, 'order': 2}),
 
             dbc.Col([
-            html.H5('Portfolio Bruto', className='text-center'),
+            html.H5('Bruto', className='text-center'),
             dcc.Graph(id='indicatorPeriod2',
                       figure=Figs.indicatorPeriod(),
                       style={'height':550}),
             ],
             width={'size': 2, 'offset': 0, 'order': 3}),
+
+            # dbc.Col([
+            # html.H5('BOVESPA', className='text-center'),
+            # dcc.Graph(id='indicatorPeriod3',
+            #           figure=Figs.indicatorPeriod(),
+            #           style={'height':550}),
+            # ],
+            # width={'size': 1, 'offset': 0, 'order': 4}),
+
+            # dbc.Col([
+            # html.H5('SP&500', className='text-center'),
+            # dcc.Graph(id='indicatorPeriod4',
+            #           figure=Figs.indicatorPeriod(),
+            #           style={'height':550}),
+            # ],
+            # width={'size': 1, 'offset': 0, 'order': 5}),
         ]),
         html.Hr(),
 
@@ -143,22 +159,22 @@ def update_graph_temas(n_clicks, value):
         retur = Figs.retur
         sharpe = Figs.sharpe
         fig_1 = Figs.returnPortfolio()
-        fig_2 = Figs.indicatorPeriod(Figs.GrapPor.port_main_return)
-        fig_3 = Figs.indicatorPeriod(Figs.GrapPor.port_comp_return)
-        fig_4 = Figs.returnPeriod()
-        fig_5 = Figs.figPie()
-        fig_6 = Figs.graphAssets()
-        fig_7 = Figs.fronteiraEficiente()   
+        fig_2 = Figs.indicatorPeriod('Portfolio', 'Portfolio Bruto')
+        fig_3 = Figs.indicatorPeriod('Portfolio Bruto', 'Portfolio')
+        fig_6 = Figs.returnPeriod()
+        fig_7 = Figs.figPie()
+        fig_8 = Figs.graphAssets()
+        fig_9 = Figs.fronteiraEficiente()   
         size = len(Figs.GrapPor.port)
         dic_size =  {i: '{}'.format(i) for i in range(0, size-1)}
         para_str = f'''Tick: {Figs.param['tick']}  |  Cálculo: {Figs.param['dates_to_calculate']}  |  Atualização: {Figs.param['atualization']}  | 
          Otimização: {Figs.param['otimization']}  |  Inicio: {Figs.param['start']}  |  Final: {Figs.param['end']}'''
 
-        return risco, retur, sharpe, fig_1, fig_2, fig_3, fig_4, fig_5, fig_6, fig_7, size, dic_size, para_str
+        return risco, retur, sharpe, fig_1, fig_2, fig_3, fig_6, fig_7, fig_8, fig_9, size, dic_size, para_str
     else:
-        fig_6 = Figs.figPie(value)
-        fig_7 = Figs.fronteiraEficiente(value)  
-        return no, no, no, no, no, no, no, fig_6, no, fig_7, no, no, no
+        fig_7 = Figs.figPie(value)
+        fig_9 = Figs.fronteiraEficiente(value)  
+        return no, no, no, no, no, no, no, fig_7, no, fig_9, no, no, no
 
 
 

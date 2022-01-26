@@ -37,10 +37,10 @@ class SetPara:
             return self.returnAvoid()
         return self.GrapPor.graphAssets()
 
-    def indicatorPeriod(self, value=[1,1,1,1]):
+    def indicatorPeriod(self, value=[1,1,1,1], b=[1,1,1,1]):
         if type(self.GrapPor)==list:
             return self.returnAvoid()
-        return self.GrapPor.indicatorPeriod(value)
+        return self.GrapPor.indicatorPeriod(value, b)
 
     def returnPeriod(self):
         if type(self.GrapPor)==list:

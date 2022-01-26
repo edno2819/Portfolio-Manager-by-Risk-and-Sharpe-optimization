@@ -1,5 +1,5 @@
 import pandas as pd
-
+from statistics import *
 
 def covariancia(closes_1, closes_2):
     c = 0
@@ -13,12 +13,8 @@ def covariancia(closes_1, closes_2):
     return c
 
 def variancia(closes):
-    v = 0
-    mean = sum(closes)/len(closes)
-    for close in closes:
-        v += (close - mean)**2
-    v /= len(closes)-1
-    return v
+    variance(closes)
+    return  variance(closes)
 
 def media_retorno(closes:list):
     mean = 0
@@ -73,3 +69,46 @@ def max_drawdowm(serie):
     data['ret'] = data['Adj Close'].pct_change()
 
     return drawdown_function(data['ret'])
+
+def superi(a, b):
+    count, dif = 0, 0
+    count2, dif2 = 0, 0
+    for fist, two in zip(a, b):
+        if fist>two:
+            count+=1
+            dif+=fist-two
+        elif two>fist:
+            count2+=1
+            dif2+=two-fist
+
+    superioridade_media = dif/len(a)
+    superioridade_porcent = (count*100)/len(a)
+    return superioridade_porcent, superioridade_media
+
+
+def variancia2(closes):
+    v = 0
+    mean = sum(closes)/len(closes)
+    for close in closes:
+        v += (close - mean)**2
+    v /= len(closes)-1
+    return v
+
+def sdp2(closes):
+    count=0
+    for c in closes:
+        if c<0:
+            count+=c**2
+    return (count/len(closes))**0.5
+
+def sdp(closes, n=1, taxa_livre_risco=0):
+    count = closes[0] - 1 if closes[0]>n else 0
+    for c in range(1, len(closes)):
+        value = closes[c] 
+        if value - closes[c-1]<taxa_livre_risco:
+            count += (value**2)
+    return (count/len(closes))**0.5
+
+# a = [10, 6, -12, 1, -8, -3, 8, 7, -9, -7]
+
+# s = variancia(a)**0.5

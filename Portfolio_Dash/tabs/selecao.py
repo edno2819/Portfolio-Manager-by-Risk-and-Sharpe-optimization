@@ -26,8 +26,8 @@ image_card = dbc.Card(
                     min_date_allowed= date(2005, 1, 1),
                     max_date_allowed= date(2021, 4, 1),
                     initial_visible_month= date(2010, 1, 1),
-                    start_date= date(2013, 5, 1),
-                    end_date= date(2021, 4, 1),
+                    start_date= date(2011, 1, 1),
+                    end_date= date(2020, 12, 30),
                 ),
 
                 html.Hr(),
