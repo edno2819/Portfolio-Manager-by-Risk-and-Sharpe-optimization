@@ -234,14 +234,26 @@ class GraphPort:
         self.values_growth['Portfolio'] = values
         fig = go.Figure() 
         fig.add_trace(go.Scatter(x=dates, y=values, mode="lines", name='Portfolio'))
+        annotations.append(dict(xref='paper', x=1.01, y=values[-1],
+                    xanchor='left', yanchor='middle',
+                    text=f'{round(values[-1]*100,2)}%',
+                    font=dict(family='Arial',
+                                size=16),
+                    showarrow=False))
         
 
         for comp in self.port_comp.keys():
             values_comp = calculate_return_portfolio_unique(self.port_comp_taxa[comp+' TAXA'][:len(dates)], self.port_comp[comp])  
             fig.add_trace(go.Scatter(x=dates, y=values_comp, mode="lines",  name=comp))
             self.values_growth[comp] = values_comp
+            annotations.append(dict(xref='paper', x=1.01, y=values_comp[-1],
+                            xanchor='left', yanchor='middle',
+                            text=f'{round(values_comp[-1]*100,2)}%',
+                            font=dict(family='Arial',
+                                        size=16),
+                            showarrow=False))
 
-        fig.layout.template = self.CHART_THEME
+        fig.layout.template = self.CHART_THEME#"seaborn"#
         # Source
         annotations.append(dict(xref='paper', yref='paper', x=0.5, y=-0.1,
                                     xanchor='center', yanchor='top',

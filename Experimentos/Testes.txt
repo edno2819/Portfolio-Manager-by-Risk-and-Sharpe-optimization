@@ -1,0 +1,32 @@
+PERIODO - 2014-2020
+CALCULO - 35
+TICK - 1 SEMANA
+
+ATIVOS FALTANTES:
+CVC
+CCRO
+HYPE
+
+IBOVE
+	RISCO
+		6 - 
+		4
+		2
+		1
+	SHARPE
+		6
+		4
+		2
+		1
+
+CARTEIRA RISCO
+	RISCO
+		6
+		4
+		2
+		1
+	SHARPE
+		6
+		4
+		2
+		1

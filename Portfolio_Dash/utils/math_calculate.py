@@ -13,8 +13,13 @@ def covariancia(closes_1, closes_2):
     return c
 
 def variancia(closes):
-    variance(closes)
-    return  variance(closes)
+    #variance(closes)
+    v = 0
+    mean = sum(closes)/len(closes)
+    for close in closes:
+        v += (close - mean)**2
+    v /= len(closes)-1
+    return v
 
 def media_retorno(closes:list):
     mean = 0

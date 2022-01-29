@@ -31,13 +31,14 @@ def setDataClose(assets, start, end, interval):
     #DELETANDO LINHAS VAZIAS
     CLOSES = dataset['Adj Close'].drop(columns=names_to_drop)
     CLOSES = CLOSES.dropna()
-
     return dataset , CLOSES
+    #return 1, carregar_dados('IBOV-RISCO')
 
 
 def createSetPortfolio(assets, start, end, interval, atualization, dates_to_calculate):
     ports = []
     _ , CLOSES = setDataClose(assets, start, end, interval)
+    #CLOSES = CLOSES[(CLOSES.index >= start) & (CLOSES.index <= end)]
 
     
     for c in range(dates_to_calculate, len(list(CLOSES.index)), atualization):
@@ -61,6 +62,8 @@ def createSetPortfolio(assets, start, end, interval, atualization, dates_to_calc
 def createSetPortfolioToMinimize(assets, start, end, interval, atualization, dates_to_calculate):
     ports = []
     dataset , CLOSES = setDataClose(assets, start, end, interval)
+    _ , CLOSES = setDataClose(assets, start, end, interval)
+    CLOSES = CLOSES[(CLOSES.index >= start) & (CLOSES.index <= end)]
     
     for c in range(dates_to_calculate, len(list(CLOSES.index)), atualization):
         ports.append(Portifolio())
@@ -147,7 +150,7 @@ def setPortfolio(ports, interval):
 
 def minimize_portfolio(port, function):
     assets_name = list(port.port.keys())
-    limites = tuple([(0, 1) for c in range(len(assets_name))])
+    limites = tuple([(0, 0.5) for c in range(len(assets_name))])
     x0 = [1/len(assets_name) for c in range(len(assets_name))]
     cons = ({'type': 'eq', 'fun': lambda x:  np.sum(x) - 1})
 

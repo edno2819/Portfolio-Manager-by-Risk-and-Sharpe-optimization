@@ -1,0 +1,92 @@
+
+IBOVE = [
+'ITUB4.SA','BBDC3.SA','VALE3.SA','PETR3.SA','ABEV3.SA','BBAS3.SA',
+'B3SA3.SA','ITSA4.SA','LREN3.SA','UGPA3.SA','BBDC3.SA','SUZB3.SA','JBSS3.SA','RENT3.SA','BRFS3.SA','SANB11.SA','EQTL3.SA','GGBR4.SA','BRKM5.SA','EMBR3.SA',
+'WEGE3.SA','LAME4.SA','CMIG4.SA','CIEL3.SA','RADL3.SA','SBSP3.SA','BRML3.SA','ELET3.SA','MULT3.SA','CSAN3.SA',
+'FLRY3.SA','CSNA3.SA','BRAP4.SA','TAEE11.SA','ENBR3.SA','USIM5.SA','CYRE3.SA','MRVE3.SA','GOAU4.SA','GOLL4.SA','QUAL3.SA','MRFG3.SA','ECOR3.SA',
+]
+
+
+
+
+
+
+1      & Marfrig       & MRFG3      & 34      & Sabesp       & SBSP3    \\ \hline
+2      & ItauUnibanco       & ITUB4      & 35      & Taesa       & TAEE11    \\ \hline
+3      & Qualicorp       & QUAL3      & 36      & BR Malls Par       & BRML3    \\ \hline
+4      & Vale       & VALE3      & 37      & Ecorodovias       & ECOR3    \\ \hline
+5      & Gol       & GOLL4      & 38      & Bradespar       & BRAP4    \\ \hline
+6      & Petrobras       & PETR3      & 39      & Sid Nacional       &  CSNA3   \\ \hline
+7      & Ambev S/A       & ABEV3      & 40      &  Fleury      & FLRY3    \\ \hline
+8      & Brasil       & BBAS3      & 41      & Eletrobras       & ELET3    \\ \hline
+9      & B3       & B3SA3      & 42      & Cosan       & CSAN3    \\ \hline
+10      & Itausa       & ITSA4      & 43      &        &     \\ \hline
+11     & Lojas Renner       & LREN3      & 44      &        &     \\ \hline
+12     & Ultrapar       & UGPA3      & 45      &        &     \\ \hline
+13     & Bradesco       & BBDC3      & 46      &        &     \\ \hline
+14     & Suzano Papel       & SUZB3      & 47      &      &     \\ \hline
+15     & JBS       & JBSS3      & 48      &       &     \\ \hline
+16     & Gerdau Met     & GOAU4      & 49      &        &     \\ \hline
+17     & Natura      & MULT3      & 50      &        &     \\ \hline
+18     & Localiza        & RENT3      & 51      &        &     \\ \hline
+19     & MRV        & MRVE3      & 52      &        &     \\ \hline
+20     & BRF SA       & BRFS3      & 53      &        &     \\ \hline
+21      & Santander BR       & SANB11      & 54      &        &     \\ \hline
+22      & Cyrela Realt      &  CYRE3     & 55      &        &     \\ \hline
+23      & Usiminas      & USIM5      & 56      &        &     \\ \hline
+24      & Gerdau       & GGBR4      & 57      &        &     \\ \hline
+25     &  Energias BR      & ENBR3      & 58      &        &     \\ \hline
+26     & Braskem       & BRKM5      & 59      &        &     \\ \hline
+27     & Embraer       & EMBR3      & 60      &        &     \\ \hline
+28     & Weg       & WEGE3      & 61      &        &     \\ \hline
+29     & Cemig       & CMIG4      & 62      &        &     \\ \hline
+30     & Cielo       & CIEL3      & 63      &        &     \\ \hline
+31     & RaiaDrogasil       & RADL3      & 64      &        &    \\ \hline
+32     & Equatorial       & EQTL3      & 65      &        &     \\ \hline
+33     & Lojas Americ       & LAME4      & 66      &       &     \\ \hline
+
+
+
+
+
+
+
+\newpage
+\section{Empresas que compõem Ibovespa}
+\begin{table}[h]
+\centering
+\caption[Setores da carteira1]{Tabela dos setores das empresas que compõem Ibovespa}
+\label{tab:taxalivrederisco}
+\begin{tabular}{|c|c|}
+\hline
+\rowcolor[HTML]{000000} 
+{\color[HTML]{FFFFFF} \textbf{Setores}}           & {\color[HTML]{FFFFFF} \textbf{Quantidade}} \\ \hline
+Previdência e seguros                          & 1                                              \\ \hline
+Exploração de imóveis                                          & 4                         \\ \hline
+Alimentos processados        & 3                                             \\ \hline
+Comércio        & 5                                             \\ \hline
+Transporte        & 4                                             \\ \hline
+Diversos        & 4                                             \\ \hline
+Serviços médico-hospitalares, análises e diagnósticos        & 2                         \\ \hline
+Construção civil        & 2                                             \\ \hline
+Siderurgia e metalurgia        & 4                                             \\ \hline
+Mineração        & 2                                             \\ \hline
+Energia elétrica        & 7                                             \\ \hline
+Produtos de uso pessoal e de limpeza        & 1                                             \\ \hline
+Petróleo, gás e biocombustíveis        & 3                                             \\ \hline
+Água e saneamento        & 1                                             \\ \hline
+Telecomunicações        & 2                                             \\ \hline
+Viagens e lazer        & 1                                             \\ \hline
+Viagens e lazer        & 3                                             \\ \hline
+Viagens e lazer        & 1                                             \\ \hline
+Madeira e papel        & 2                                             \\ \hline
+Intermediários financeiros        & 4                                             \\ \hline
+Bebidas        & 1                                             \\ \hline
+Serviços financeiros diversos        & 2                                             \\ \hline
+Material de transporte        & 1                                             \\ \hline
+Máquinas e equipamentos        & 1                                             \\ \hline
+\rowcolor[HTML]{000000} 
+{\color[HTML]{FFFFFF} \textbf{Total de Empresas}} & {\color[HTML]{FFFFFF} \textbf{61}}                  \\ \hline
+\end{tabular}
+\legend{Fonte: Autoral}
+\end{table}\ldots

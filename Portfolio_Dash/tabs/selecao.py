@@ -26,7 +26,7 @@ image_card = dbc.Card(
                     min_date_allowed= date(2005, 1, 1),
                     max_date_allowed= date(2021, 4, 1),
                     initial_visible_month= date(2010, 1, 1),
-                    start_date= date(2011, 1, 1),
+                    start_date= date(2013, 1, 1),
                     end_date= date(2020, 12, 30),
                 ),
 
@@ -46,7 +46,7 @@ image_card = dbc.Card(
                         ]),
                     dbc.Col([
                         html.H6("Intervalo dos Cálculos:", className="card-text"),
-                        dcc.Input(id="dates_to_calculate", type="number", placeholder="input with range",min=5, max=500, step=1, value=52)
+                        dcc.Input(id="dates_to_calculate", type="number", placeholder="input with range",min=5, max=500, step=1, value=35)
                         ])
                     ], justify="around"),
 
